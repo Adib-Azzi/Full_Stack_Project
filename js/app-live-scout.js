@@ -1,7 +1,25 @@
-// Live Scout page entry point
-import { NavController } from './ui/NavController.js';
+/**
+ * app-live-scout.js
+ * Entry point for live-scout.html.
+ * Instantiates NavController, ApiService, and ScoutRenderer,
+ * then injects ApiService into ScoutRenderer (dependency injection —
+ * ScoutRenderer never imports ApiService directly, keeping classes decoupled).
+ */
+import { NavController }  from './ui/NavController.js';
+import { ApiService }     from './services/ApiService.js';
+import { ScoutRenderer }  from './ui/ScoutRenderer.js';
 
 new NavController();
-console.log('Legends XI: Live Scout page loaded');
 
-// ApiService + ScoutRenderer wiring arrives in Phase 5
+const api = new ApiService();
+
+new ScoutRenderer(api, {
+  form:      'scoutSearchForm',
+  input:     'scoutSearchInput',
+  posFilter: 'scoutPositionFilter',
+  grid:      'scoutResultsGrid',
+  loading:   'scoutLoadingState',
+  error:     'scoutErrorState',
+  empty:     'scoutEmptyState',
+  pagination:'scoutPagination',
+});

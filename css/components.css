@@ -700,3 +700,422 @@
   max-width: 480px;
   margin: 0 0 var(--space-md);
 }
+
+/* ==========================================================================
+   LIVE SCOUT PAGE — Search Form, Cards, Spinner, Pagination (Phase 5)
+   ========================================================================== */
+
+/* ---- Search Form ---- */
+.scout-search-form {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+  margin: var(--space-lg) 0 var(--space-md);
+}
+
+.scout-search-form__input {
+  flex: 1 1 220px;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  padding: 0.6rem var(--space-sm);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  transition: var(--transition-fast);
+}
+
+.scout-search-form__input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.scout-search-form__input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(11, 110, 79, 0.15);
+}
+
+.scout-search-form__select {
+  flex: 0 1 180px;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  padding: 0.6rem var(--space-sm);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.scout-search-form__select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+/* ---- CSS Football Spinner ---- */
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto var(--space-sm);
+  width: 60px;
+  height: 60px;
+  position: relative;
+}
+
+.spinner__ball {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background:
+    /* Black pentagon patches on a white ball */
+    radial-gradient(circle at 50% 50%, #fff 60%, transparent 60%),
+    conic-gradient(
+      #222 0deg 72deg,
+      #fff 72deg 144deg,
+      #222 144deg 216deg,
+      #fff 216deg 288deg,
+      #222 288deg 360deg
+    );
+  box-shadow: inset 0 0 0 2px #222, var(--shadow-md);
+  animation: spinBall 0.9s linear infinite;
+}
+
+@keyframes spinBall {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Scout Welcome State ---- */
+.scout-welcome {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+}
+
+.scout-welcome__icon {
+  font-size: 3.5rem;
+  margin: 0 0 var(--space-sm);
+}
+
+.scout-welcome__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-2xl);
+  color: var(--color-secondary);
+  margin: 0 0 var(--space-xs);
+}
+
+.scout-welcome__text {
+  font-size: var(--fs-base);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ---- Scout Player Cards ---- */
+.scout-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-base);
+  border: 1px solid var(--color-border);
+}
+
+.scout-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+/* ---- Scout Card Header ---- */
+.scout-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-md) var(--space-xs);
+  position: relative;
+}
+
+.scout-card__photo-wrap {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--color-primary);
+  border: 2px solid var(--color-border);
+}
+
+.scout-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scout-card__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.scout-card__name {
+  font-size: var(--fs-base);
+  font-family: var(--font-body);
+  font-weight: var(--fw-bold);
+  color: var(--color-secondary);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scout-card__meta {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-xs);
+}
+
+/* ---- Rating Badge ---- */
+.scout-card__rating {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  font-family: var(--font-heading);
+  font-size: var(--fs-xl);
+  line-height: 1;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-bold);
+}
+
+.rating--good { background-color: #D1E7DD; color: #0A3622; }
+.rating--avg  { background-color: #FFF3CD; color: #856404; }
+.rating--poor { background-color: #F8D7DA; color: #842029; }
+
+/* ---- Team Strip ---- */
+.scout-card__team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--color-surface-alt);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.scout-card__team-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.scout-card__team-name {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.scout-card__league {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+/* ---- Scout Card Stats Row ---- */
+.scout-card__stats {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-sm) var(--space-md);
+  gap: var(--space-xs);
+}
+
+.scout-card__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.scout-card__stat-val {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--color-secondary);
+}
+
+.scout-card__stat-label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ---- Scout Card Footer ---- */
+.scout-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md);
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+}
+
+.scout-card__height {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+}
+
+.scout-card__league-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  opacity: 0.7;
+}
+
+/* ---- Pagination ---- */
+.scout-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0 var(--space-2xl);
+}
+
+.pagination-summary {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pagination-btn {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  padding: 6px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.pagination-btn:hover:not([disabled]) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pagination-btn.is-active {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-dark);
+  border-color: var(--color-primary);
+}
+
+.pagination-btn.is-disabled,
+.pagination-btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  padding: 0 4px;
+}
+
+/* ---- Error state code + link ---- */
+.state-panel--error code {
+  background-color: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: var(--fs-sm);
+  color: var(--color-primary-dark);
+}
+
+.state-panel--error a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* ---- About page ---- */
+.about-content {
+  padding: var(--space-lg) 0 var(--space-2xl);
+  max-width: 760px;
+}
+
+.about-content h2 {
+  margin-top: var(--space-lg);
+  font-size: var(--fs-2xl);
+  color: var(--color-secondary);
+}
+
+.about-content h3 {
+  margin-top: var(--space-md);
+  font-size: var(--fs-xl);
+  color: var(--color-primary);
+}
+
+.about-content p,
+.about-content li {
+  font-size: var(--fs-base);
+  color: var(--color-text-secondary);
+  line-height: 1.75;
+}
+
+.about-content a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  transition: var(--transition-fast);
+}
+
+.about-content a:hover {
+  color: var(--color-accent-dark);
+}
+
+.about-content code {
+  background-color: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-size: var(--fs-sm);
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-border);
+}
+
+.about-steps {
+  list-style: decimal;
+  padding-left: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.about-steps li {
+  padding-left: var(--space-xs);
+}
