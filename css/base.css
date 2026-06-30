@@ -1,1 +1,101 @@
-/* Base resets & typography (Phase 3) */
+/* ==========================================================================
+   BASE STYLES — resets, global element defaults, typography hierarchy
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-regular);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  line-height: 1.6;
+  /* Offset content so it never sits under the fixed sticky nav */
+  padding-top: var(--navbar-height);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- Typographic Hierarchy ----
+   Bebas Neue (display) for all headings = strong visual weight contrast
+   against the Inter body copy, satisfying the "clear typographic hierarchy"
+   requirement. */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: var(--fw-regular); /* Bebas Neue is inherently bold/condensed */
+  letter-spacing: 0.5px;
+  line-height: 1.15;
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--color-secondary);
+}
+
+h1 { font-size: var(--fs-4xl); }
+h2 { font-size: var(--fs-3xl); }
+h3 { font-size: var(--fs-2xl); }
+h4 { font-size: var(--fs-xl); }
+
+p {
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--color-text-secondary);
+}
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* ---- Accessible focus ring ----
+   Visible on every focusable element, satisfies a11y requirement.
+   Uses :focus-visible so it only shows for keyboard navigation,
+   not on every mouse click (modern best practice). */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Skip-to-content target gets no visible outline change since it's instant */
+#main-content {
+  scroll-margin-top: var(--navbar-height);
+}
+
+.site-footer {
+  background-color: var(--color-secondary);
+  color: var(--color-text-on-dark);
+  padding: var(--space-lg) 0;
+  margin-top: var(--space-2xl);
+  text-align: center;
+}
+
+.site-footer p {
+  color: var(--color-text-on-dark);
+  opacity: 0.7;
+  margin: 0;
+  font-size: var(--fs-sm);
+}

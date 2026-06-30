@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legends XI | About</title>
+  <meta name="description" content="About the Legends XI project, its data sources, and methodology." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+
+  <header>
+    <nav class="navbar-custom" aria-label="Primary navigation">
+      <div class="navbar-custom__container">
+        <a href="index.html" class="navbar-custom__brand" aria-label="Legends XI home">
+          <span class="navbar-custom__brand-mark">⚽</span>
+          <span class="navbar-custom__brand-text">LEGENDS<span class="navbar-custom__brand-accent">XI</span></span>
+        </a>
+
+        <button
+          class="navbar-custom__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primaryNavLinks"
+          aria-label="Toggle navigation menu"
+          id="navToggleBtn"
+        >
+          <span class="navbar-custom__toggle-bar"></span>
+          <span class="navbar-custom__toggle-bar"></span>
+          <span class="navbar-custom__toggle-bar"></span>
+        </button>
+
+        <ul class="navbar-custom__links" id="primaryNavLinks">
+          <li><a href="index.html" class="navbar-custom__link">Home</a></li>
+          <li><a href="hall-of-fame.html" class="navbar-custom__link">Hall of Fame</a></li>
+          <li><a href="live-scout.html" class="navbar-custom__link">Live Scout</a></li>
+          <li><a href="about.html" class="navbar-custom__link is-active">About</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <section class="hero">
+      <div class="container">
+        <h1 class="hero__title">About This Project</h1>
+        <p class="hero__subtitle">The story, data sources, and methodology behind Legends XI.</p>
+      </div>
+    </section>
+
+    <section class="container about-content">
+      <h2>What is Legends XI?</h2>
+      <p>
+        Legends XI is a football hall of fame and live scouting hub built to celebrate
+        the players who shaped the sport's history, while also giving fans a window
+        into current player and team data through a live API.
+      </p>
+
+      <h2>Data Sources</h2>
+      <p>
+        The Hall of Fame section features 15 originally written profiles of legendary
+        footballers, researched and authored specifically for this project. The Live
+        Scout section pulls real-time player and team data from the API-Football service.
+      </p>
+
+      <h2>Built With</h2>
+      <p>
+        Semantic HTML5, hand-written CSS3 with Flexbox, Bootstrap 5 components,
+        and vanilla modern JavaScript (ES6 classes and modules) — no frameworks,
+        no jQuery.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 Legends XI. Built for academic demonstration purposes.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/app-about.js"></script>
+</body>
+</html>

@@ -1,1 +1,91 @@
-/* Responsive breakpoints (Phase 3/6) */
+/* ==========================================================================
+   RESPONSIVE — breakpoints & mobile nav behavior
+   Mobile-first considerations layered on top of the desktop-default styles
+   defined in components.css / base.css.
+   ========================================================================== */
+
+/* ---- Tablet and below (<= 768px) ----
+   Sticky nav switches from a horizontal Flexbox row to a slide-down panel.
+   Stays compact in height per the brief ("must not take up too much
+   vertical real estate"). */
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: var(--navbar-height-mobile);
+  }
+
+  .navbar-custom__toggle {
+    display: flex;
+  }
+
+  .navbar-custom__links {
+    position: absolute;
+    top: var(--navbar-height-mobile);
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background-color: var(--color-primary-dark);
+    box-shadow: var(--shadow-md);
+
+    /* Collapsed by default: zero height, hidden overflow, fades in via JS toggle */
+    max-height: 0;
+    overflow: hidden;
+    transition: var(--transition-base);
+  }
+
+  .navbar-custom__links.is-open {
+    max-height: 320px; /* enough room for 4 links comfortably */
+  }
+
+  .navbar-custom__link {
+    padding: var(--space-sm) var(--space-md);
+    width: 100%;
+  }
+
+  /* Underline animation looks odd in a stacked mobile menu — replace with
+     a left accent bar on hover/active instead */
+  .navbar-custom__link::after {
+    display: none;
+  }
+
+  .navbar-custom__link:hover,
+  .navbar-custom__link.is-active {
+    background-color: rgba(242, 183, 5, 0.12);
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .hero__title {
+    font-size: var(--fs-3xl);
+  }
+
+  .hero__subtitle {
+    font-size: var(--fs-base);
+    padding: 0 var(--space-sm);
+  }
+}
+
+/* ---- Small phones (<= 420px) ----
+   Tighten spacing further and ensure brand text never wraps awkwardly. */
+@media (max-width: 420px) {
+  .navbar-custom__container {
+    padding: 0 var(--space-sm);
+  }
+
+  .navbar-custom__brand-text {
+    font-size: var(--fs-base);
+  }
+
+  .hero {
+    padding: var(--space-xl) 0;
+  }
+}
+
+/* ---- Large desktop (>= 1400px) ----
+   Slightly widen the container ceiling for very large monitors so content
+   doesn't feel cramped in the center of the screen. */
+@media (min-width: 1400px) {
+  :root {
+    --container-max: 1320px;
+  }
+}

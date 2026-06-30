@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legends XI | Hall of Fame</title>
+  <meta name="description" content="Browse 15 of football's greatest legends, filterable by era and position." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+
+  <header>
+    <nav class="navbar-custom" aria-label="Primary navigation">
+      <div class="navbar-custom__container">
+        <a href="index.html" class="navbar-custom__brand" aria-label="Legends XI home">
+          <span class="navbar-custom__brand-mark">⚽</span>
+          <span class="navbar-custom__brand-text">LEGENDS<span class="navbar-custom__brand-accent">XI</span></span>
+        </a>
+
+        <button
+          class="navbar-custom__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primaryNavLinks"
+          aria-label="Toggle navigation menu"
+          id="navToggleBtn"
+        >
+          <span class="navbar-custom__toggle-bar"></span>
+          <span class="navbar-custom__toggle-bar"></span>
+          <span class="navbar-custom__toggle-bar"></span>
+        </button>
+
+        <ul class="navbar-custom__links" id="primaryNavLinks">
+          <li><a href="index.html" class="navbar-custom__link">Home</a></li>
+          <li><a href="hall-of-fame.html" class="navbar-custom__link is-active">Hall of Fame</a></li>
+          <li><a href="live-scout.html" class="navbar-custom__link">Live Scout</a></li>
+          <li><a href="about.html" class="navbar-custom__link">About</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <!-- Page header -->
+    <section class="hero">
+      <div class="container">
+        <h1 class="hero__title">Hall of Fame</h1>
+        <p class="hero__subtitle">15 legendary footballers who redefined the game.</p>
+      </div>
+    </section>
+
+    <!-- Filter controls — wired up to HallOfFameRenderer in Phase 4 -->
+    <section class="container" aria-label="Filter legends">
+      <div id="hofFilters" class="hof-filters">
+        <!-- Filter buttons injected/enhanced by JS in Phase 4 -->
+      </div>
+    </section>
+
+    <!-- Grid where the 15 curated legend cards will render -->
+    <section class="container" aria-label="Legends grid">
+      <div id="legendsGrid" class="legends-grid" role="list">
+        <!-- Cards injected dynamically by HallOfFameRenderer.js in Phase 4 -->
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 Legends XI. Built for academic demonstration purposes.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/app-hall-of-fame.js"></script>
+</body>
+</html>

@@ -1,1 +1,252 @@
-/* Components: navbar, cards, buttons, states (Phase 3) */
+/* ==========================================================================
+   COMPONENTS — Sticky Navbar (Phase 3)
+   More components (cards, buttons, states) will be appended in later phases.
+   ========================================================================== */
+
+/* ---- Sticky Navbar Wrapper ----
+   position: sticky keeps it pinned to the top of the viewport on scroll
+   while remaining part of normal document flow (better than `fixed` for
+   accessibility — no risk of overlapping content if JS fails to load). */
+.navbar-custom {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--navbar-height);
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+}
+
+.navbar-custom__container {
+  max-width: var(--container-max);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+
+  /* Flexbox layout: brand on the left, links on the right, toggle hidden on desktop */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ---- Brand / Logo ---- */
+.navbar-custom__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-heading);
+  font-size: var(--fs-xl);
+  color: var(--color-text-on-dark);
+  letter-spacing: 1px;
+  transition: var(--transition-fast);
+}
+
+.navbar-custom__brand:hover {
+  color: var(--color-accent);
+}
+
+.navbar-custom__brand-mark {
+  font-size: var(--fs-xl);
+}
+
+.navbar-custom__brand-accent {
+  color: var(--color-accent);
+}
+
+/* ---- Nav Links (Flexbox row on desktop) ---- */
+.navbar-custom__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.navbar-custom__link {
+  position: relative;
+  font-family: var(--font-body);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.3px;
+  color: var(--color-text-on-dark);
+  padding: var(--space-xs) 2px;
+  transition: var(--transition-fast);
+}
+
+/* Animated underline using a pseudo-element — grows from 0 to full width */
+.navbar-custom__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background-color: var(--color-accent);
+  transition: var(--transition-fast);
+}
+
+.navbar-custom__link:hover {
+  color: var(--color-accent);
+}
+
+.navbar-custom__link:hover::after {
+  width: 100%;
+}
+
+/* Active page indicator — solid underline, no hover animation needed */
+.navbar-custom__link.is-active {
+  color: var(--color-accent);
+}
+
+.navbar-custom__link.is-active::after {
+  width: 100%;
+}
+
+.navbar-custom__link:active {
+  transform: translateY(1px);
+}
+
+/* ---- Mobile Toggle Button (hamburger) ----
+   Hidden on desktop, shown via media query in responsive.css. */
+.navbar-custom__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.navbar-custom__toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-custom__toggle-bar {
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-text-on-dark);
+  border-radius: 2px;
+  transition: var(--transition-base);
+}
+
+/* Toggle button "X" animation when nav is open (class added by NavController.js) */
+.navbar-custom__toggle.is-open .navbar-custom__toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar-custom__toggle.is-open .navbar-custom__toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+.navbar-custom__toggle.is-open .navbar-custom__toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---- Hero (temporary, expanded properly per-page later) ---- */
+.hero {
+  padding: var(--space-2xl) 0;
+  text-align: center;
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-on-dark);
+}
+
+.hero__title {
+  color: var(--color-text-on-dark);
+  font-size: var(--fs-4xl);
+}
+
+.hero__subtitle {
+  color: var(--color-text-on-dark);
+  opacity: 0.85;
+  font-size: var(--fs-lg);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ---- Temporary layout scaffolding for Phase 4/5 sections ----
+   Full visual polish (cards, buttons, loading/error states) is built out
+   properly in Phase 4 and Phase 5. These rules just prevent broken/raw
+   layout in the meantime. */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.legends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
+}
+
+.btn-primary {
+  background-color: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border: none;
+  font-weight: var(--fw-semibold);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-dark);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.scout-search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0;
+}
+
+.scout-search-form__input,
+.scout-search-form__select {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  transition: var(--transition-fast);
+}
+
+.scout-search-form__input {
+  flex: 1 1 240px;
+}
+
+.scout-search-form__input:focus,
+.scout-search-form__select:focus {
+  border-color: var(--color-accent);
+}
+
+.state-panel--hidden {
+  display: none;
+}
+
+.about-content {
+  padding: var(--space-lg) 0 var(--space-2xl);
+  max-width: 760px;
+}
+
+.scout-pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-md) 0 var(--space-2xl);
+}
