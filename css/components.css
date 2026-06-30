@@ -250,3 +250,453 @@
   gap: var(--space-xs);
   padding: var(--space-md) 0 var(--space-2xl);
 }
+
+/* ==========================================================================
+   LEGEND CARDS (Phase 4)
+   ========================================================================== */
+
+/* ---- Card Shell ---- */
+.legend-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-base);
+}
+
+.legend-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---- Card Image ---- */
+.legend-card__img-wrap {
+  position: relative;
+  width: 100%;
+  /* Fixed aspect ratio so every card image is the same height regardless of source */
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background-color: var(--color-primary);
+}
+
+.legend-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.4s ease;
+}
+
+.legend-card:hover .legend-card__img {
+  transform: scale(1.04);
+}
+
+.legend-card__flag {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  font-size: 1.6rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+/* ---- Card Body ---- */
+.legend-card__body {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+}
+
+.legend-card__name {
+  font-size: var(--fs-xl);
+  color: var(--color-secondary);
+  margin: 0;
+}
+
+/* ---- Position + Club Meta Row ---- */
+.legend-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.legend-card__pos {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  padding: 2px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Position colour coding for quick visual scanning */
+.legend-card__pos--goalkeeper { background-color: #FFF3CD; color: #856404; }
+.legend-card__pos--defender   { background-color: #D1E7DD; color: #0A3622; }
+.legend-card__pos--midfielder { background-color: #CFE2FF; color: #084298; }
+.legend-card__pos--attacker   { background-color: #F8D7DA; color: #842029; }
+
+.legend-card__club {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--fw-medium);
+}
+
+.legend-card__years {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ---- Stats Row ---- */
+.legend-card__stats {
+  display: flex;
+  gap: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-xs) 0;
+  margin: var(--space-xs) 0;
+}
+
+.legend-card__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.legend-card__stat-label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.legend-card__stat-value {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--color-secondary);
+}
+
+.legend-card__stat-value--stars {
+  color: var(--color-accent);
+  font-size: var(--fs-base);
+  letter-spacing: 2px;
+}
+
+/* ---- Badges ---- */
+.legend-card__badges {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.legend-badge {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.legend-badge--gold {
+  background-color: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+
+.legend-badge--muted {
+  background-color: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+}
+
+/* ---- Legacy Stat + Bio ---- */
+.legend-card__legacy {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.legend-card__legacy strong {
+  color: var(--color-primary);
+}
+
+.legend-card__bio {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ==========================================================================
+   FILTER BAR (Phase 4)
+   ========================================================================== */
+.hof-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-lg) 0 var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-sm);
+}
+
+.hof-filters__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.hof-filters__label {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.hof-filters__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hof-filter-btn {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.hof-filter-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.hof-filter-btn.is-active {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-dark);
+  border-color: var(--color-primary);
+}
+
+/* ==========================================================================
+   STATE PANELS — empty / loading / error (shared, Phase 4-5)
+   ========================================================================== */
+.state-panel {
+  grid-column: 1 / -1; /* span full grid width */
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+}
+
+.state-panel--hidden {
+  display: none;
+}
+
+.state-panel__icon {
+  font-size: 3rem;
+  margin: 0 0 var(--space-sm);
+}
+
+.state-panel__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-2xl);
+  color: var(--color-secondary);
+  margin: 0 0 var(--space-xs);
+}
+
+.state-panel__msg {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ==========================================================================
+   HOME PAGE — Hero & Section Styles (Phase 4)
+   ========================================================================== */
+
+.hero--home {
+  padding: var(--space-2xl) 0;
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary-dark) 50%, var(--color-primary) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative pitch circle behind the hero content */
+.hero--home::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border: 2px solid rgba(242, 183, 5, 0.08);
+  border-radius: 50%;
+  top: -200px;
+  right: -100px;
+  pointer-events: none;
+}
+
+.hero__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.hero__text {
+  flex: 1 1 420px;
+}
+
+.hero__eyebrow {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-accent);
+  margin: 0 0 var(--space-xs);
+}
+
+.hero__title {
+  font-size: clamp(2.5rem, 6vw, var(--fs-4xl));
+  color: var(--color-text-on-dark);
+  margin: 0 0 var(--space-sm);
+  line-height: 1.05;
+}
+
+.hero__subtitle {
+  font-size: var(--fs-lg);
+  color: rgba(247, 247, 242, 0.8);
+  max-width: 500px;
+  margin: 0 0 var(--space-md);
+  line-height: 1.6;
+}
+
+.hero__ctas {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* ---- Outlined button variant ---- */
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-text-on-dark);
+  border: 2px solid rgba(255,255,255,0.4);
+  font-weight: var(--fw-semibold);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-base);
+  display: inline-block;
+}
+
+.btn-outline:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.btn-primary--lg,
+.btn-outline--lg {
+  padding: 0.7rem 1.8rem;
+  font-size: var(--fs-base);
+}
+
+/* ---- Hero stat badges ---- */
+.hero__badge-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.hero__badge {
+  background-color: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-lg);
+  text-align: center;
+  min-width: 120px;
+  backdrop-filter: blur(4px);
+}
+
+.hero__badge-num {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: var(--fs-3xl);
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.hero__badge-label {
+  display: block;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(247, 247, 242, 0.7);
+  margin-top: 4px;
+}
+
+/* ---- Home page content sections ---- */
+.home-section {
+  padding: var(--space-2xl) 0 var(--space-lg);
+}
+
+.home-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  gap: var(--space-sm);
+}
+
+.home-section__title {
+  font-size: var(--fs-2xl);
+  color: var(--color-secondary);
+  margin: 0;
+}
+
+.home-section__link {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--color-primary);
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.home-section__link:hover {
+  color: var(--color-accent);
+}
+
+/* Home grid shows 3 cards at a comfortable size */
+.legends-grid--home {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* ---- Scout Teaser Band ---- */
+.scout-teaser {
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  padding: var(--space-2xl) 0;
+  margin-top: var(--space-xl);
+}
+
+.scout-teaser__title {
+  font-size: var(--fs-3xl);
+  color: var(--color-text-on-dark);
+  margin: 0 0 var(--space-sm);
+}
+
+.scout-teaser__text {
+  color: rgba(247,247,242,0.8);
+  font-size: var(--fs-lg);
+  max-width: 480px;
+  margin: 0 0 var(--space-md);
+}

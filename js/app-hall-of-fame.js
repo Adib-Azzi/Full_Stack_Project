@@ -1,7 +1,12 @@
-// Hall of Fame page entry point
+/**
+ * app-hall-of-fame.js
+ * Entry point for hall-of-fame.html.
+ * Instantiates NavController and HallOfFameRenderer, passing in the
+ * DOM element IDs defined in the HTML. This file stays intentionally thin —
+ * all logic lives inside the class files it imports.
+ */
 import { NavController } from './ui/NavController.js';
+import { HallOfFameRenderer } from './ui/HallOfFameRenderer.js';
 
 new NavController();
-console.log('Legends XI: Hall of Fame page loaded');
-
-// HallOfFameRenderer wiring arrives in Phase 4
+new HallOfFameRenderer('legendsGrid', 'hofFilters');

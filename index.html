@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Legends XI | Home</title>
-  <meta name="description" content="Legends XI — a football hall of fame and live player scouting hub." />
+  <meta name="description" content="Legends XI — a football hall of fame and live player scouting hub celebrating the greatest footballers of all time." />
 
-  <!-- Google Fonts: Bebas Neue for headings (bold sporty feel), Inter for body (clean readability) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -14,13 +13,7 @@
     rel="stylesheet"
   />
 
-  <!-- Bootstrap 5 CDN (layout grid + components only; visual identity is hand-written) -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-
-  <!-- Our hand-written CSS, loaded in cascade order: tokens -> base -> components -> responsive -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/components.css" />
@@ -28,76 +21,97 @@
 </head>
 <body>
 
-  <!-- ============================= -->
-  <!-- STICKY TOP NAVIGATION BAR     -->
-  <!-- Semantic <nav>, 4 internal links tying together every page of the site -->
-  <!-- ============================= -->
   <header>
     <nav class="navbar-custom" aria-label="Primary navigation">
       <div class="navbar-custom__container">
-
-        <!-- Brand / logo link -->
         <a href="index.html" class="navbar-custom__brand" aria-label="Legends XI home">
           <span class="navbar-custom__brand-mark">⚽</span>
           <span class="navbar-custom__brand-text">LEGENDS<span class="navbar-custom__brand-accent">XI</span></span>
         </a>
-
-        <!-- Mobile toggle button (controls collapse on small screens) -->
-        <button
-          class="navbar-custom__toggle"
-          type="button"
-          aria-expanded="false"
-          aria-controls="primaryNavLinks"
-          aria-label="Toggle navigation menu"
-          id="navToggleBtn"
-        >
+        <button class="navbar-custom__toggle" type="button" aria-expanded="false"
+          aria-controls="primaryNavLinks" aria-label="Toggle navigation menu" id="navToggleBtn">
           <span class="navbar-custom__toggle-bar"></span>
           <span class="navbar-custom__toggle-bar"></span>
           <span class="navbar-custom__toggle-bar"></span>
         </button>
-
-        <!-- Nav links: Home + 2 internal pages + dynamic Live Scout view -->
         <ul class="navbar-custom__links" id="primaryNavLinks">
           <li><a href="index.html" class="navbar-custom__link is-active">Home</a></li>
           <li><a href="hall-of-fame.html" class="navbar-custom__link">Hall of Fame</a></li>
           <li><a href="live-scout.html" class="navbar-custom__link">Live Scout</a></li>
           <li><a href="about.html" class="navbar-custom__link">About</a></li>
         </ul>
-
       </div>
     </nav>
   </header>
 
-  <!-- ============================= -->
-  <!-- MAIN CONTENT                  -->
-  <!-- ============================= -->
   <main id="main-content">
 
-    <!-- Hero section placeholder — built out fully in Phase 3 -->
-    <section class="hero">
-      <div class="container">
-        <h1 class="hero__title">Welcome to Legends XI</h1>
-        <p class="hero__subtitle">
-          Explore football's greatest icons, then scout today's stars with live data.
-        </p>
+    <!-- ── HERO ── -->
+    <section class="hero hero--home">
+      <div class="container hero__inner">
+        <div class="hero__text">
+          <p class="hero__eyebrow">The Ultimate Football Archive</p>
+          <h1 class="hero__title">Where Legends<br/>Live Forever</h1>
+          <p class="hero__subtitle">
+            Explore in-depth profiles of 15 players who changed football forever,
+            then scout today's stars with live data from across the globe.
+          </p>
+          <div class="hero__ctas">
+            <a href="hall-of-fame.html" class="btn-primary btn-primary--lg">Explore Hall of Fame</a>
+            <a href="live-scout.html" class="btn-outline btn-outline--lg">Live Scout →</a>
+          </div>
+        </div>
+        <div class="hero__badge-wrap" aria-hidden="true">
+          <div class="hero__badge">
+            <span class="hero__badge-num">15</span>
+            <span class="hero__badge-label">Legends</span>
+          </div>
+          <div class="hero__badge">
+            <span class="hero__badge-num">6</span>
+            <span class="hero__badge-label">Nations</span>
+          </div>
+          <div class="hero__badge">
+            <span class="hero__badge-num">∞</span>
+            <span class="hero__badge-label">Legacy</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FEATURED LEGENDS (rendered by app-home.js) ── -->
+    <section class="home-section container">
+      <div class="home-section__header">
+        <h2 class="home-section__title">Featured Legends</h2>
+        <a href="hall-of-fame.html" class="home-section__link">View all 15 →</a>
+      </div>
+      <div id="featuredGrid" class="legends-grid legends-grid--home" role="list">
+        <!-- 3 featured cards injected by app-home.js -->
+      </div>
+    </section>
+
+    <!-- ── SCOUT TEASER ── -->
+    <section class="scout-teaser">
+      <div class="container scout-teaser__inner">
+        <div>
+          <h2 class="scout-teaser__title">Scout Today's Stars</h2>
+          <p class="scout-teaser__text">
+            Search and filter live player and team data from football leagues
+            around the world — powered by API-Football.
+          </p>
+          <a href="live-scout.html" class="btn-primary">Go to Live Scout</a>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ============================= -->
-  <!-- FOOTER                        -->
-  <!-- ============================= -->
   <footer class="site-footer">
     <div class="container">
       <p>&copy; 2026 Legends XI. Built for academic demonstration purposes.</p>
     </div>
   </footer>
 
-  <!-- Bootstrap 5 JS bundle (for any Bootstrap interactive components we choose to use) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Our app entry point for this page, loaded as an ES6 module -->
   <script type="module" src="js/app-home.js"></script>
 </body>
 </html>
