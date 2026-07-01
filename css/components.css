@@ -394,7 +394,7 @@ body.modal-open { overflow: hidden; }
 .scout-search-form__input:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px rgba(11,110,79,.15); }
 
 .scout-search-form__select {
-  flex: 0 1 180px; font-family: var(--font-body); font-size: var(--fs-sm);
+  flex: 0 1 10px; font-family: var(--font-body); font-size: var(--fs-sm);
   padding: .6rem var(--space-sm); border: 1.5px solid var(--color-border);
   border-radius: var(--radius-sm); background: var(--color-bg);
   color: var(--color-text-primary); cursor: pointer;
@@ -498,7 +498,7 @@ body.modal-open { overflow: hidden; }
 .dt-controls__inner { display: flex; align-items: flex-end; flex-wrap: wrap; gap: var(--space-md); padding: var(--space-md); background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
 .dt-controls__group { display: flex; flex-direction: column; gap: 4px; }
 .dt-controls__label { font-size: var(--fs-xs); font-weight: var(--fw-bold); text-transform: uppercase; letter-spacing: .5px; color: var(--color-text-secondary); }
-.dt-controls__name-input { flex: 1 1 200px; }
+.dt-controls__name-input { flex: 1 1 10px; }
 .dt-controls__reset { color: var(--color-text-primary); border-color: var(--color-border); align-self: flex-end; }
 
 /* ── Pitch container ── */
