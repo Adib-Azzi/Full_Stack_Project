@@ -1,280 +1,138 @@
 /* ==========================================================================
-   RESPONSIVE — Legends XI
-   All breakpoint overrides in one place, mobile-first layered on top of
-   the desktop-default rules in base.css and components.css.
-
-   Breakpoints used:
-     Mobile:  <= 576px  (phones)
-     Tablet:  <= 768px  (tablets, sticky nav collapses)
-     Mid:     <= 992px  (small laptops)
-     Desktop: >= 1400px (large monitors)
+   RESPONSIVE — Legends XI · Dark theme edition
+   Breakpoints: 576px | 768px | 992px | 1400px
    ========================================================================== */
 
-
 /* ============================================================
-   TABLET & BELOW (≤ 768px) — Primary nav collapse breakpoint
+   TABLET (≤ 768px) — Nav collapses
    ============================================================ */
 @media (max-width: 768px) {
+  :root { --navbar-height: var(--navbar-height-mobile); }
 
-  /* ---- Token overrides ---- */
-  :root {
-    --navbar-height: var(--navbar-height-mobile);
-  }
-
-  body {
-    padding-top: var(--navbar-height-mobile);
-  }
-
-  /* ---- Sticky Nav: collapse to hamburger ---- */
-  .navbar-custom__toggle {
-    display: flex;
-  }
+  /* Mobile nav slide-down */
+  .navbar-custom__toggle { display:flex; }
 
   .navbar-custom__links {
-    position: absolute;
-    top: var(--navbar-height-mobile);
-    left: 0;
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    background-color: var(--color-primary-dark);
-    box-shadow: var(--shadow-md);
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease, opacity 0.35s ease;
-    opacity: 0;
+    position:absolute;top:var(--navbar-height-mobile);left:0;width:100%;
+    flex-direction:column;align-items:stretch;gap:0;
+    background-color:var(--color-secondary);
+    border-bottom:1px solid var(--color-border-gold);
+    box-shadow:var(--shadow-md);
+    max-height:0;overflow:hidden;
+    transition:max-height 0.35s ease, opacity 0.35s ease;
+    opacity:0;
   }
-
-  .navbar-custom__links.is-open {
-    max-height: 320px;
-    opacity: 1;
-  }
+  .navbar-custom__links.is-open { max-height:360px;opacity:1; }
 
   .navbar-custom__link {
-    padding: var(--space-sm) var(--space-md);
-    width: 100%;
-    border-left: 3px solid transparent;
-    transition: var(--transition-fast);
+    padding:var(--space-sm) var(--space-md);width:100%;
+    border-left:3px solid transparent;
   }
-
-  /* Replace animated underline with left accent bar on mobile */
-  .navbar-custom__link::after {
-    display: none;
-  }
-
+  .navbar-custom__link::after { display:none; }
   .navbar-custom__link:hover,
   .navbar-custom__link.is-active {
-    background-color: rgba(242, 183, 5, 0.1);
-    border-left-color: var(--color-accent);
-    color: var(--color-accent);
+    background:rgba(242,183,5,0.08);
+    border-left-color:var(--color-accent);
+    color:var(--color-accent);
   }
 
-  /* ---- Hero text ---- */
-  .hero__title     { font-size: var(--fs-3xl); }
-  .hero__subtitle  { font-size: var(--fs-base); padding: 0 var(--space-sm); }
+  /* Hero */
+  .hero__title    { font-size:var(--fs-3xl); }
+  .hero__subtitle { font-size:var(--fs-base);padding:0 var(--space-sm); }
+  .hero__inner    { flex-direction:column;text-align:center;gap:var(--space-lg); }
+  .hero__subtitle { margin:0 auto var(--space-md); }
+  .hero__ctas     { justify-content:center; }
 
-  /* ---- Home hero layout: stack vertically ---- */
-  .hero__inner {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--space-lg);
-  }
+  .hero__badge-wrap { flex-direction:row;justify-content:center;width:100%; }
+  .hero__badge      { flex:1;min-width:80px;padding:var(--space-sm); }
+  .hero__badge-num  { font-size:var(--fs-2xl); }
 
-  .hero__subtitle { margin: 0 auto var(--space-md); }
+  /* Grids */
+  .legends-grid { grid-template-columns:repeat(2,1fr); }
 
-  .hero__ctas {
-    justify-content: center;
-  }
+  /* Filters */
+  .hof-filters { flex-direction:column;gap:var(--space-sm);padding:var(--space-md) 0 var(--space-xs); }
+  .hof-filters__group { flex-direction:column;align-items:flex-start; }
 
-  /* ---- Hero badge strip: horizontal row on tablet ---- */
-  .hero__badge-wrap {
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .hero__badge {
-    flex: 1;
-    min-width: 80px;
-    padding: var(--space-sm);
-  }
-
-  .hero__badge-num { font-size: var(--fs-2xl); }
-
-  /* ---- Legends grid: 2-col on tablet ---- */
-  .legends-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  /* ---- Hall of Fame filter bar: wrap cleanly ---- */
-  .hof-filters {
-    flex-direction: column;
-    gap: var(--space-sm);
-    padding: var(--space-md) 0 var(--space-xs);
-  }
-
-  .hof-filters__group {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  /* ---- Scout search form: stack inputs ---- */
-  .scout-search-form {
-    flex-direction: column;
-  }
-
+  /* Scout form */
+  .scout-search-form { flex-direction:column; }
   .scout-search-form__input,
-  .scout-search-form__select {
-    flex: 1 1 auto;
-    width: 100%;
-  }
+  .scout-search-form__select { flex:1 1 auto;width:100%; }
+  .scout-search-form .btn-primary { width:100%;padding:.75rem;font-size:var(--fs-base); }
 
-  .scout-search-form .btn-primary {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: var(--fs-base);
-  }
+  .home-section__header { flex-direction:column;align-items:flex-start;gap:var(--space-xs); }
+  .scout-teaser__title  { font-size:var(--fs-2xl); }
+  .scout-teaser__text   { font-size:var(--fs-base); }
+  .about-content        { padding:var(--space-md) 0 var(--space-xl); }
+  .about-steps          { padding-left:var(--space-md); }
+  .pagination-btn       { padding:5px 10px;font-size:var(--fs-xs); }
 
-  /* ---- Scout cards: 2-col on tablet ---- */
-  .legends-grid .scout-card {
-    min-width: 0; /* prevent overflow */
-  }
+  /* Fixtures panel: stack on mobile */
+  .fixtures-panel { grid-template-columns:1fr; }
 
-  /* ---- Home section header: stack on small screens ---- */
-  .home-section__header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-xs);
-  }
-
-  /* ---- Scout teaser ---- */
-  .scout-teaser__title  { font-size: var(--fs-2xl); }
-  .scout-teaser__text   { font-size: var(--fs-base); }
-
-  /* ---- About content ---- */
-  .about-content        { padding: var(--space-md) 0 var(--space-xl); }
-  .about-steps          { padding-left: var(--space-md); }
-
-  /* ---- Pagination: tighter on tablet ---- */
-  .pagination-controls  { gap: 4px; }
-  .pagination-btn       { padding: 5px 10px; font-size: var(--fs-xs); }
+  /* Dream team controls compact on mobile */
+  .dt-controls__inner { flex-direction:column;align-items:stretch; }
+  .dt-controls__inner .scout-search-form__select { flex:1;width:100%; }
+  .dt-controls__name-input { flex:1;width:100% !important; }
 }
 
-
 /* ============================================================
-   MOBILE (≤ 576px) — Phones
+   MOBILE (≤ 576px)
    ============================================================ */
 @media (max-width: 576px) {
+  .container                { padding:0 var(--space-sm); }
+  .navbar-custom__container { padding:0 var(--space-sm); }
+  .navbar-custom__brand-text { font-size:var(--fs-base); }
 
-  /* ---- Container padding ---- */
-  .container            { padding: 0 var(--space-sm); }
-  .navbar-custom__container { padding: 0 var(--space-sm); }
+  .hero      { padding:var(--space-xl) 0; }
+  .hero__title { font-size:var(--fs-2xl); }
+  .hero--home  { padding:var(--space-xl) 0; }
 
-  /* ---- Brand text shrink ---- */
-  .navbar-custom__brand-text { font-size: var(--fs-base); }
-
-  /* ---- Hero ---- */
-  .hero                 { padding: var(--space-xl) 0; }
-  .hero__title          { font-size: var(--fs-2xl); }
-  .hero--home           { padding: var(--space-xl) 0; }
-
-  /* ---- Badges: still horizontal but smaller ---- */
-  .hero__badge-num      { font-size: var(--fs-xl); }
-  .hero__badge          { padding: var(--space-xs) var(--space-sm); }
-
-  /* ---- CTA buttons: full width on tiny phones ---- */
-  .hero__ctas           { flex-direction: column; }
+  .hero__badge-num  { font-size:var(--fs-xl); }
+  .hero__badge      { padding:var(--space-xs) var(--space-sm); }
+  .hero__ctas       { flex-direction:column; }
   .btn-primary--lg,
-  .btn-outline--lg      { width: 100%; text-align: center; }
+  .btn-outline--lg  { width:100%;text-align:center; }
 
-  /* ---- Legend cards: single column ---- */
-  .legends-grid         { grid-template-columns: 1fr; }
+  .legends-grid { grid-template-columns:repeat(2,1fr); }
 
-  /* ---- Legend card bio: limit height to prevent endless scrolling ---- */
-  .legend-card__bio {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+  .scout-welcome       { padding:var(--space-xl) var(--space-sm); }
+  .scout-welcome__icon { font-size:2.5rem; }
+  .hof-filter-btn      { font-size:0.72rem;padding:3px 10px; }
+  .state-panel         { padding:var(--space-xl) var(--space-sm); }
+  .state-panel__icon   { font-size:2.5rem; }
+  .site-footer         { margin-top:var(--space-xl); }
 
-  /* ---- Scout card name: prevent overflow on very long names ---- */
-  .scout-card__name     {
-    font-size: var(--fs-sm);
-    white-space: normal;
-    word-break: break-word;
-  }
+  /* Fixture names even shorter on phones */
+  .fixture-row__team-name { max-width:52px;font-size:0.65rem; }
 
-  /* ---- Scout welcome panel ---- */
-  .scout-welcome        { padding: var(--space-xl) var(--space-sm); }
-  .scout-welcome__icon  { font-size: 2.5rem; }
-
-  /* ---- Filter buttons: wrap tightly ---- */
-  .hof-filter-btn       { font-size: 0.75rem; padding: 3px 10px; }
-
-  /* ---- State panels ---- */
-  .state-panel          { padding: var(--space-xl) var(--space-sm); }
-  .state-panel__icon    { font-size: 2.5rem; }
-
-  /* ---- Pagination: prev/next only, hide page numbers on tiny screens ---- */
-  .pagination-btn:not([aria-label="Previous page"]):not([aria-label="Next page"]):not(.is-active) {
-    display: none;
-  }
-
-  /* ---- Footer ---- */
-  .site-footer          { margin-top: var(--space-xl); }
-  .site-footer p        { font-size: var(--fs-xs); }
-
-  /* ---- Scout teaser ---- */
-  .scout-teaser         { padding: var(--space-xl) 0; }
+  /* Pagination: show only prev/active/next */
+  .pagination-btn:not([aria-label="Previous page"]):not([aria-label="Next page"]):not(.is-active) { display:none; }
 }
 
-
 /* ============================================================
-   MID (≤ 992px) — Small laptops / large tablets
+   MID (≤ 992px)
    ============================================================ */
 @media (max-width: 992px) {
-
-  /* ---- Home hero: keep two cols but tighten gap ---- */
-  .hero__inner          { gap: var(--space-lg); }
-
-  /* ---- Legend cards: comfortable 2-col ---- */
-  .legends-grid--home   { grid-template-columns: repeat(2, 1fr); }
+  .hero__inner        { gap:var(--space-lg); }
+  .legends-grid--home { grid-template-columns:repeat(2,1fr); }
 }
 
-
 /* ============================================================
-   LARGE DESKTOP (≥ 1400px) — Wide monitors
+   LARGE DESKTOP (≥ 1400px)
    ============================================================ */
 @media (min-width: 1400px) {
-  :root {
-    --container-max: 1320px;
-  }
-
-  /* ---- 4-col legend grid on very wide screens ---- */
-  .legends-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  /* ---- Home featured: stays 3-col ---- */
-  .legends-grid--home {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  :root { --container-max:1320px; }
+  .legends-grid      { grid-template-columns:repeat(5,1fr); }
+  .legends-grid--home { grid-template-columns:repeat(3,1fr); }
 }
 
-
 /* ============================================================
-   PRINT — minimal, clean output if someone prints a page
+   PRINT
    ============================================================ */
 @media print {
-  .navbar-custom,
-  .site-footer,
-  .hero__ctas,
-  .hof-filters,
-  .scout-search-form,
-  .scout-pagination   { display: none; }
-
-  body                { padding-top: 0; background: white; color: black; }
-  .legend-card        { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+  .navbar-custom,.site-footer,.hero__ctas,
+  .hof-filters,.scout-search-form,.scout-pagination { display:none; }
+  body { background:white;color:black; }
+  .legend-card--compact { break-inside:avoid;box-shadow:none;border:1px solid #ccc; }
 }

@@ -204,14 +204,30 @@ export class ScoutRenderer {
    */
   _buildFixturesPanel(past, next) {
     const renderFixture = (f, isResult) => {
-      const scored = f.homeScore !== null && f.awayScore !== null;
+      const scored  = f.homeScore !== null && f.awayScore !== null;
+      const score   = (isResult && scored) ? `${f.homeScore} – ${f.awayScore}` : (f.time || 'TBC');
+      const homeBadge = f.homeBadge
+        ? `<img src="${f.homeBadge}" alt="${f.homeTeam}" class="fixture-row__badge"
+             onerror="this.style.display='none'" />`
+        : '';
+      const awayBadge = f.awayBadge
+        ? `<img src="${f.awayBadge}" alt="${f.awayTeam}" class="fixture-row__badge"
+             onerror="this.style.display='none'" />`
+        : '';
       return `
         <div class="fixture-row">
-          <span class="fixture-row__date">${f.date}</span>
-          <span class="fixture-row__teams">${f.homeTeam} vs ${f.awayTeam}</span>
-          ${isResult && scored
-            ? `<span class="fixture-row__score">${f.homeScore} – ${f.awayScore}</span>`
-            : `<span class="fixture-row__time">${f.time || 'TBC'}</span>`}
+          <span class="fixture-row__date">${f.date}${f.league ? ' · ' + f.league : ''}</span>
+          <div class="fixture-row__matchup">
+            <span class="fixture-row__team">
+              ${homeBadge}
+              <span class="fixture-row__team-name">${f.homeTeam}</span>
+            </span>
+            <span class="fixture-row__score-center">${score}</span>
+            <span class="fixture-row__team fixture-row__team--away">
+              <span class="fixture-row__team-name">${f.awayTeam}</span>
+              ${awayBadge}
+            </span>
+          </div>
         </div>`;
     };
 

@@ -1,56 +1,66 @@
 /* ==========================================================================
-   DESIGN TOKENS — Legends XI
-   A professional football/sports aesthetic built on CSS Custom Properties.
-   Every color, font, spacing, and radius value used across the site is
-   defined here ONCE so the whole UI stays visually consistent.
+   DESIGN TOKENS — Legends XI  ·  Dark / Gold / White Edition
+   A premium "legendary status" palette:
+     — Near-black backgrounds evoke a dark stadium at night
+     — Gold (#F2B705) is the sole accent — trophy, prestige, authority
+     — Off-white type creates crisp contrast without harsh pure-white glare
    ========================================================================== */
 
 :root {
-  /* ---- Color Palette ----
-     Inspired by a night-match pitch: deep forest green surfaces,
-     a vivid "kit" accent gold, and crisp off-white text for contrast. */
-  --color-primary: #0B6E4F;        /* deep pitch green — headers, nav, primary buttons */
-  --color-primary-dark: #074A35;   /* darker shade for hover/active states */
-  --color-secondary: #1B1B2F;      /* near-black navy — footer, dark surfaces */
-  --color-accent: #F2B705;         /* gold — CTAs, badges, highlights, active link underline */
-  --color-accent-dark: #C99304;    /* accent hover state */
+  /* ── Color Palette ────────────────────────────────────────────────────── */
 
-  --color-bg: #F7F7F2;             /* warm off-white page background */
-  --color-surface: #FFFFFF;        /* card / panel surfaces */
-  --color-surface-alt: #EFEFE8;    /* subtle alternate surface (stripes, table rows) */
+  /* Backgrounds & surfaces */
+  --color-bg:           #0D0D0D;   /* page background — deep black          */
+  --color-surface:      #1A1A1A;   /* card / panel surface                  */
+  --color-surface-alt:  #222222;   /* alternate surface (stripes, table alt)*/
+  --color-surface-raised: #252525; /* slightly lifted surface for depth     */
 
-  --color-text-primary: #1B1B2F;   /* main body text, AA-compliant on light backgrounds */
-  --color-text-secondary: #5A5A66; /* muted text, captions, metadata */
-  --color-text-on-dark: #F7F7F2;   /* text used on primary/secondary dark surfaces */
-  --color-text-on-accent: #1B1B2F; /* text on gold accent backgrounds (needs dark text for contrast) */
+  /* Brand greens replaced by dark tones — gold is the only "color" now */
+  --color-primary:      #1C1C1C;   /* nav, headers, primary containers      */
+  --color-primary-dark: #111111;   /* deeper shade for hover / active       */
 
-  --color-border: #E0E0D8;         /* hairline borders / dividers */
-  --color-success: #2E7D32;
-  --color-error: #C62828;
-  --color-error-bg: #FDECEA;
+  /* Secondary (footer, darker panels) */
+  --color-secondary:    #0A0A0A;   /* near-pure black                       */
 
-  /* ---- Typography ----
-     Bebas Neue: bold condensed display font for headings (sporty, high-impact).
-     Inter: highly legible body font with a full weight range for hierarchy. */
+  /* Gold accent — the single pop of color across the entire UI */
+  --color-accent:       #F2B705;   /* trophy gold — CTAs, active links      */
+  --color-accent-dark:  #C99304;   /* darker gold for hover states          */
+  --color-accent-muted: rgba(242,183,5,0.12); /* subtle gold tint for bg   */
+
+  /* Text */
+  --color-text-primary:   #F0EFE8;  /* warm off-white — main body text      */
+  --color-text-secondary: #888880;  /* muted grey — captions, metadata      */
+  --color-text-on-dark:   #F0EFE8;  /* text on dark surfaces                */
+  --color-text-on-accent: #0D0D0D;  /* black text on gold (contrast safe)   */
+
+  /* Borders / dividers */
+  --color-border:       #2C2C2C;   /* subtle dark border                    */
+  --color-border-gold:  rgba(242,183,5,0.25); /* gold-tinted border accent  */
+
+  /* Status */
+  --color-success:      #2E7D32;
+  --color-error:        #EF5350;
+  --color-error-bg:     rgba(239,83,80,0.1);
+
+  /* ── Typography ──────────────────────────────────────────────────────── */
   --font-heading: 'Bebas Neue', 'Arial Narrow', sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body:    'Inter', system-ui, -apple-system, sans-serif;
 
-  --fw-regular: 400;
-  --fw-medium: 500;
+  --fw-regular:  400;
+  --fw-medium:   500;
   --fw-semibold: 600;
-  --fw-bold: 700;
+  --fw-bold:     700;
 
-  --fs-xs: 0.8rem;
-  --fs-sm: 0.9rem;
+  --fs-xs:   0.8rem;
+  --fs-sm:   0.9rem;
   --fs-base: 1rem;
-  --fs-lg: 1.15rem;
-  --fs-xl: 1.5rem;
-  --fs-2xl: 2rem;
-  --fs-3xl: 2.75rem;
-  --fs-4xl: 3.5rem;
+  --fs-lg:   1.15rem;
+  --fs-xl:   1.5rem;
+  --fs-2xl:  2rem;
+  --fs-3xl:  2.75rem;
+  --fs-4xl:  3.5rem;
 
-  /* ---- Spacing Scale ----
-     Consistent rhythm used for padding/margin across all components. */
+  /* ── Spacing ─────────────────────────────────────────────────────────── */
   --space-xs: 0.5rem;
   --space-sm: 1rem;
   --space-md: 1.5rem;
@@ -58,23 +68,25 @@
   --space-xl: 4rem;
   --space-2xl: 6rem;
 
-  /* ---- Shape & Elevation ---- */
+  /* ── Shape ───────────────────────────────────────────────────────────── */
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 20px;
 
-  --shadow-sm: 0 2px 8px rgba(27, 27, 47, 0.06);
-  --shadow-md: 0 6px 20px rgba(27, 27, 47, 0.10);
-  --shadow-lg: 0 12px 32px rgba(27, 27, 47, 0.16);
+  /* ── Elevation — dark UI shadows use gold tint, not grey ─────────────── */
+  --shadow-sm: 0 2px 8px  rgba(0,0,0,0.45);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.55);
+  --shadow-lg: 0 12px 36px rgba(0,0,0,0.70);
 
-  /* ---- Motion ----
-     Single source of truth for transitions so every interactive element
-     feels consistent ("crisp" hover/focus/active states per UX brief). */
+  /* Gold glow — used on hover/active cards for the "legendary" feel */
+  --shadow-gold: 0 0 0 1px rgba(242,183,5,0.4), 0 8px 28px rgba(242,183,5,0.15);
+
+  /* ── Motion ──────────────────────────────────────────────────────────── */
   --transition-fast: all 0.2s ease;
   --transition-base: all 0.3s ease;
 
-  /* ---- Layout ---- */
-  --navbar-height: 72px;
-  --navbar-height-mobile: 60px;
-  --container-max: 1180px;
+  /* ── Layout ──────────────────────────────────────────────────────────── */
+  --navbar-height:        68px;
+  --navbar-height-mobile: 58px;
+  --container-max:        1180px;
 }
