@@ -230,7 +230,7 @@ export class HallOfFameRenderer {
     return `
       <div class="hof-modal__hero">
         <img
-          src="images/${l.image}.jpg"
+          src="images/${l.id}.jpg"
           alt="Photo of ${l.name}"
           class="hof-modal__photo"
           onerror="this.src='https://placehold.co/280x320/0B6E4F/F7F7F2?text=${encodeURIComponent(l.name)}'"
