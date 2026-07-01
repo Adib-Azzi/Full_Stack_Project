@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Legends XI | Live Scout</title>
-  <meta name="description" content="Search and scout current football players using live data from top leagues." />
+  <meta name="description" content="Search current football players by name using live data." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -17,6 +17,7 @@
 <body>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
+
   <header>
     <nav class="navbar-custom" aria-label="Primary navigation">
       <div class="navbar-custom__container">
@@ -31,10 +32,11 @@
           <span class="navbar-custom__toggle-bar"></span>
         </button>
         <ul class="navbar-custom__links" id="primaryNavLinks">
-          <li><a href="index.html" class="navbar-custom__link">Home</a></li>
+          <li><a href="index.html"        class="navbar-custom__link">Home</a></li>
           <li><a href="hall-of-fame.html" class="navbar-custom__link">Hall of Fame</a></li>
-          <li><a href="live-scout.html" class="navbar-custom__link is-active">Live Scout</a></li>
-          <li><a href="about.html" class="navbar-custom__link">About</a></li>
+          <li><a href="live-scout.html"   class="navbar-custom__link is-active">Live Scout</a></li>
+          <li><a href="dream-team.html"   class="navbar-custom__link">Dream Team</a></li>
+          <li><a href="about.html"        class="navbar-custom__link">About</a></li>
         </ul>
       </div>
     </nav>
@@ -45,55 +47,31 @@
     <section class="hero">
       <div class="container">
         <h1 class="hero__title">Live Scout</h1>
-        <p class="hero__subtitle">Search players across the world's top leagues using live football data.</p>
+        <p class="hero__subtitle">Search any player by name — no league selection needed.</p>
       </div>
     </section>
 
     <section class="container" aria-label="Search controls">
+      <!-- Name-only search — no league dropdown required anymore -->
       <form id="scoutSearchForm" class="scout-search-form" role="search" novalidate>
-
-        <!-- Player name -->
         <label for="scoutSearchInput" class="visually-hidden">Search player name</label>
         <input
-          type="text"
-          id="scoutSearchInput"
+          type="text" id="scoutSearchInput"
           class="scout-search-form__input"
-          placeholder="Player name (e.g. Mbappe, Haaland…)"
-          autocomplete="off"
-          minlength="3"
+          placeholder="Search any player — e.g. Bellingham, Haaland, Salah…"
+          autocomplete="off" minlength="3"
         />
-
-        <!--
-          League selector — REQUIRED by API-Football.
-          The /players?search= endpoint mandates a league or team ID.
-          IDs sourced from: https://www.api-football.com/documentation-v3
-        -->
-        <select id="scoutLeagueSelect" class="scout-search-form__select" aria-label="Select league">
-          <option value="">— Select League —</option>
-          <optgroup label="Europe">
-            <option value="39">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
-            <option value="140">🇪🇸 La Liga</option>
-            <option value="78">🇩🇪 Bundesliga</option>
-            <option value="135">🇮🇹 Serie A</option>
-            <option value="61">🇫🇷 Ligue 1</option>
-            <option value="2">🏆 UEFA Champions League</option>
-          </optgroup>
-          <optgroup label="International">
-            <option value="1">🌍 FIFA World Cup</option>
-          </optgroup>
-        </select>
-
-        <!-- Client-side position filter (applied after results return) -->
-        <select id="scoutPositionFilter" class="scout-search-form__select" aria-label="Filter by position">
-          <option value="">All Positions</option>
-          <option value="Goalkeeper">Goalkeeper</option>
-          <option value="Defender">Defender</option>
-          <option value="Midfielder">Midfielder</option>
-          <option value="Attacker">Attacker</option>
-        </select>
-
         <button type="submit" class="btn-primary">Search</button>
       </form>
+
+      <!-- Client-side position filter pills -->
+      <div id="scoutPositionFilter" class="scout-pos-filters" role="group" aria-label="Filter by position">
+        <button class="scout-pos-btn is-active" data-pos="">All Positions</button>
+        <button class="scout-pos-btn" data-pos="Goalkeeper">Goalkeeper</button>
+        <button class="scout-pos-btn" data-pos="Defender">Defender</button>
+        <button class="scout-pos-btn" data-pos="Midfielder">Midfielder</button>
+        <button class="scout-pos-btn" data-pos="Forward">Forward</button>
+      </div>
     </section>
 
     <section class="container" aria-live="polite" aria-label="Search results">

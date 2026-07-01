@@ -1,72 +1,84 @@
 /**
  * ApiService.js
  * -----------------------------------------------------------------------
- * Handles every network request to API-Football (v3).
- *
- * IMPORTANT NOTE ON API CONSTRAINTS:
- * The /players endpoint requires EITHER a `league` OR `team` ID parameter
- * alongside any `search` query. A bare name search alone returns an error:
- * "The League or Team field is required with the Search field."
- * We therefore require a leagueId to be passed with every player search.
+ * PRIMARY: TheSportsDB v1 (free, no key, flexible name-only search)
+ *   searchPlayers(name)         → /searchplayers.php?p={name}
+ *   getTeamLastFixtures(teamId) → /eventslast.php?id={teamId}
+ *   getTeamNextFixtures(teamId) → /eventsnext.php?id={teamId}
  * -----------------------------------------------------------------------
  */
-import { API_KEY, API_BASE_URL } from '../../config/config.js';
+import { SPORTSDB_BASE_URL } from '../../config/config.js';
 
 export class ApiService {
   constructor() {
-    this._baseUrl = API_BASE_URL;
-    this._headers = {
-      'x-apisports-key': API_KEY,
-    };
+    this._base = SPORTSDB_BASE_URL;
   }
 
-  /**
-   * Search for players by name within a specific league.
-   *
-   * @param {string} query    — player name (min 3 chars)
-   * @param {string} leagueId — API-Football league ID (e.g. '39' for Premier League)
-   * @param {number} season   — season year (e.g. 2024 = 2024/25)
-   * @returns {Promise<Array>}
-   */
-  async searchPlayers(query, leagueId, season = 2024) {
-    if (!query || query.trim().length < 3) {
+  async searchPlayers(name) {
+    if (!name || name.trim().length < 3) {
       throw new Error('Please enter at least 3 characters to search.');
     }
-    if (!leagueId) {
-      throw new Error('Please select a league before searching.');
-    }
-    if (API_KEY === 'YOUR_API_KEY_HERE') {
-      throw new Error('NO_KEY');
-    }
-
-    const url = `${this._baseUrl}/players?search=${encodeURIComponent(query.trim())}&league=${leagueId}&season=${season}`;
-    return this._fetch(url);
+    const url  = `${this._base}/searchplayers.php?p=${encodeURIComponent(name.trim())}`;
+    const raw  = await this._fetch(url);
+    const players = raw.player || [];
+    return players.map(this._normalisePlayer);
   }
 
-  /**
-   * Core fetch wrapper — attaches auth headers, validates HTTP + API-level errors.
-   */
+  async getTeamLastFixtures(teamId) {
+    if (!teamId) return [];
+    const raw = await this._fetch(`${this._base}/eventslast.php?id=${teamId}`);
+    return (raw.results || []).map(this._normaliseFixture);
+  }
+
+  async getTeamNextFixtures(teamId) {
+    if (!teamId) return [];
+    const raw = await this._fetch(`${this._base}/eventsnext.php?id=${teamId}`);
+    return (raw.events || []).map(this._normaliseFixture);
+  }
+
+  async searchPlayersByTeam(teamName) {
+    if (!teamName || teamName.trim().length < 3) return [];
+    const raw = await this._fetch(`${this._base}/searchplayers.php?t=${encodeURIComponent(teamName.trim())}`);
+    return (raw.player || []).map(this._normalisePlayer);
+  }
+
+  _normalisePlayer = (p) => ({
+    id:          p.idPlayer       || '',
+    name:        p.strPlayer      || 'Unknown',
+    nationality: p.strNationality || '—',
+    position:    p.strPosition    || '—',
+    team:        p.strTeam        || '—',
+    rawTeamId:   p.idTeam         || null,
+    height:      p.strHeight      || '',
+    weight:      p.strWeight      || '',
+    born:        p.dateBorn       || '',
+    photo:       p.strThumb       || p.strCutout || '',
+    description: p.strDescriptionEN || '',
+    age: p.dateBorn
+      ? Math.floor((Date.now() - new Date(p.dateBorn)) / (1000 * 60 * 60 * 24 * 365.25))
+      : null,
+  });
+
+  _normaliseFixture = (e) => ({
+    id:        e.idEvent           || '',
+    homeTeam:  e.strHomeTeam       || '—',
+    awayTeam:  e.strAwayTeam       || '—',
+    homeScore: e.intHomeScore      ?? null,
+    awayScore: e.intAwayScore      ?? null,
+    date:      e.dateEvent         || '',
+    time:      e.strTime           || '',
+    league:    e.strLeague         || '',
+    venue:     e.strVenue          || '',
+    status:    e.strStatus         || '',
+    homeBadge: e.strHomeTeamBadge  || '',
+    awayBadge: e.strAwayTeamBadge  || '',
+  });
+
   async _fetch(url) {
-    let response;
-    try {
-      response = await fetch(url, { headers: this._headers });
-    } catch {
-      throw new Error('Network error — please check your internet connection and try again.');
-    }
-
-    if (!response.ok) {
-      if (response.status === 429) throw new Error('Rate limit reached — the free plan allows 100 requests/day. Try again tomorrow.');
-      if (response.status === 401 || response.status === 403) throw new Error('Invalid API key — please check your key in config/config.js.');
-      throw new Error(`API request failed (HTTP ${response.status}). Please try again later.`);
-    }
-
-    const data = await response.json();
-
-    if (data.errors && Object.keys(data.errors).length > 0) {
-      const firstError = Object.values(data.errors)[0];
-      throw new Error(`API error: ${firstError}`);
-    }
-
-    return data.response || [];
+    let res;
+    try { res = await fetch(url); }
+    catch { throw new Error('Network error — please check your internet connection.'); }
+    if (!res.ok) throw new Error(`Request failed (HTTP ${res.status}). Please try again.`);
+    return res.json();
   }
 }
