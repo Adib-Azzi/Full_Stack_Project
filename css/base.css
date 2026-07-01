@@ -19,7 +19,7 @@ body {
   background-color: var(--color-bg);
   line-height: 1.6;
   /* Offset content so it never sits under the fixed sticky nav */
-  padding-top: var(--navbar-height);
+  padding-top: 0;
 }
 
 img {
