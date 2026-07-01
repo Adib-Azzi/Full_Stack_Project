@@ -18,7 +18,7 @@ if (featuredGrid) {
     return `
       <article class="legend-card" role="listitem" aria-label="${legend.name}, ${legend.nationality} ${legend.position}">
         <div class="legend-card__img-wrap">
-          <img src="${legend.image}" alt="Photo of ${legend.name}" class="legend-card__img" loading="lazy"
+          <img src="images/${legend.id}.jpg" alt="Photo of ${legend.name}" class="legend-card__img" loading="lazy"
             onerror="this.src='https://placehold.co/400x300/0B6E4F/F7F7F2?text=${encodeURIComponent(legend.name)}'" />
           <span class="legend-card__flag" aria-label="${legend.nationality}">${legend.flag}</span>
         </div>
