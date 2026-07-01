@@ -199,7 +199,7 @@ export class HallOfFameRenderer {
       >
         <div class="legend-card__img-wrap">
           <img
-            src="${legend.image}"
+            src="images/${legend.id}.jpg"
             alt="Photo of ${legend.name}"
             class="legend-card__img"
             loading="lazy"
@@ -230,7 +230,7 @@ export class HallOfFameRenderer {
     return `
       <div class="hof-modal__hero">
         <img
-          src="${l.image}"
+          src="images/${l.image}.jpg"
           alt="Photo of ${l.name}"
           class="hof-modal__photo"
           onerror="this.src='https://placehold.co/280x320/0B6E4F/F7F7F2?text=${encodeURIComponent(l.name)}'"
