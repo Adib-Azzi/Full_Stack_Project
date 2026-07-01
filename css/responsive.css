@@ -1,18 +1,31 @@
 /* ==========================================================================
-   RESPONSIVE — breakpoints & mobile nav behavior
-   Mobile-first considerations layered on top of the desktop-default styles
-   defined in components.css / base.css.
+   RESPONSIVE — Legends XI
+   All breakpoint overrides in one place, mobile-first layered on top of
+   the desktop-default rules in base.css and components.css.
+
+   Breakpoints used:
+     Mobile:  <= 576px  (phones)
+     Tablet:  <= 768px  (tablets, sticky nav collapses)
+     Mid:     <= 992px  (small laptops)
+     Desktop: >= 1400px (large monitors)
    ========================================================================== */
 
-/* ---- Tablet and below (<= 768px) ----
-   Sticky nav switches from a horizontal Flexbox row to a slide-down panel.
-   Stays compact in height per the brief ("must not take up too much
-   vertical real estate"). */
+
+/* ============================================================
+   TABLET & BELOW (≤ 768px) — Primary nav collapse breakpoint
+   ============================================================ */
 @media (max-width: 768px) {
+
+  /* ---- Token overrides ---- */
   :root {
     --navbar-height: var(--navbar-height-mobile);
   }
 
+  body {
+    padding-top: var(--navbar-height-mobile);
+  }
+
+  /* ---- Sticky Nav: collapse to hamburger ---- */
   .navbar-custom__toggle {
     display: flex;
   }
@@ -27,65 +40,241 @@
     gap: 0;
     background-color: var(--color-primary-dark);
     box-shadow: var(--shadow-md);
-
-    /* Collapsed by default: zero height, hidden overflow, fades in via JS toggle */
     max-height: 0;
     overflow: hidden;
-    transition: var(--transition-base);
+    transition: max-height 0.35s ease, opacity 0.35s ease;
+    opacity: 0;
   }
 
   .navbar-custom__links.is-open {
-    max-height: 320px; /* enough room for 4 links comfortably */
+    max-height: 320px;
+    opacity: 1;
   }
 
   .navbar-custom__link {
     padding: var(--space-sm) var(--space-md);
     width: 100%;
+    border-left: 3px solid transparent;
+    transition: var(--transition-fast);
   }
 
-  /* Underline animation looks odd in a stacked mobile menu — replace with
-     a left accent bar on hover/active instead */
+  /* Replace animated underline with left accent bar on mobile */
   .navbar-custom__link::after {
     display: none;
   }
 
   .navbar-custom__link:hover,
   .navbar-custom__link.is-active {
-    background-color: rgba(242, 183, 5, 0.12);
-    border-left: 3px solid var(--color-accent);
+    background-color: rgba(242, 183, 5, 0.1);
+    border-left-color: var(--color-accent);
+    color: var(--color-accent);
   }
 
-  .hero__title {
-    font-size: var(--fs-3xl);
+  /* ---- Hero text ---- */
+  .hero__title     { font-size: var(--fs-3xl); }
+  .hero__subtitle  { font-size: var(--fs-base); padding: 0 var(--space-sm); }
+
+  /* ---- Home hero layout: stack vertically ---- */
+  .hero__inner {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-lg);
   }
 
-  .hero__subtitle {
+  .hero__subtitle { margin: 0 auto var(--space-md); }
+
+  .hero__ctas {
+    justify-content: center;
+  }
+
+  /* ---- Hero badge strip: horizontal row on tablet ---- */
+  .hero__badge-wrap {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hero__badge {
+    flex: 1;
+    min-width: 80px;
+    padding: var(--space-sm);
+  }
+
+  .hero__badge-num { font-size: var(--fs-2xl); }
+
+  /* ---- Legends grid: 2-col on tablet ---- */
+  .legends-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ---- Hall of Fame filter bar: wrap cleanly ---- */
+  .hof-filters {
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md) 0 var(--space-xs);
+  }
+
+  .hof-filters__group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* ---- Scout search form: stack inputs ---- */
+  .scout-search-form {
+    flex-direction: column;
+  }
+
+  .scout-search-form__input,
+  .scout-search-form__select {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .scout-search-form .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
     font-size: var(--fs-base);
-    padding: 0 var(--space-sm);
   }
+
+  /* ---- Scout cards: 2-col on tablet ---- */
+  .legends-grid .scout-card {
+    min-width: 0; /* prevent overflow */
+  }
+
+  /* ---- Home section header: stack on small screens ---- */
+  .home-section__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  /* ---- Scout teaser ---- */
+  .scout-teaser__title  { font-size: var(--fs-2xl); }
+  .scout-teaser__text   { font-size: var(--fs-base); }
+
+  /* ---- About content ---- */
+  .about-content        { padding: var(--space-md) 0 var(--space-xl); }
+  .about-steps          { padding-left: var(--space-md); }
+
+  /* ---- Pagination: tighter on tablet ---- */
+  .pagination-controls  { gap: 4px; }
+  .pagination-btn       { padding: 5px 10px; font-size: var(--fs-xs); }
 }
 
-/* ---- Small phones (<= 420px) ----
-   Tighten spacing further and ensure brand text never wraps awkwardly. */
-@media (max-width: 420px) {
-  .navbar-custom__container {
-    padding: 0 var(--space-sm);
+
+/* ============================================================
+   MOBILE (≤ 576px) — Phones
+   ============================================================ */
+@media (max-width: 576px) {
+
+  /* ---- Container padding ---- */
+  .container            { padding: 0 var(--space-sm); }
+  .navbar-custom__container { padding: 0 var(--space-sm); }
+
+  /* ---- Brand text shrink ---- */
+  .navbar-custom__brand-text { font-size: var(--fs-base); }
+
+  /* ---- Hero ---- */
+  .hero                 { padding: var(--space-xl) 0; }
+  .hero__title          { font-size: var(--fs-2xl); }
+  .hero--home           { padding: var(--space-xl) 0; }
+
+  /* ---- Badges: still horizontal but smaller ---- */
+  .hero__badge-num      { font-size: var(--fs-xl); }
+  .hero__badge          { padding: var(--space-xs) var(--space-sm); }
+
+  /* ---- CTA buttons: full width on tiny phones ---- */
+  .hero__ctas           { flex-direction: column; }
+  .btn-primary--lg,
+  .btn-outline--lg      { width: 100%; text-align: center; }
+
+  /* ---- Legend cards: single column ---- */
+  .legends-grid         { grid-template-columns: 1fr; }
+
+  /* ---- Legend card bio: limit height to prevent endless scrolling ---- */
+  .legend-card__bio {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .navbar-custom__brand-text {
-    font-size: var(--fs-base);
+  /* ---- Scout card name: prevent overflow on very long names ---- */
+  .scout-card__name     {
+    font-size: var(--fs-sm);
+    white-space: normal;
+    word-break: break-word;
   }
 
-  .hero {
-    padding: var(--space-xl) 0;
+  /* ---- Scout welcome panel ---- */
+  .scout-welcome        { padding: var(--space-xl) var(--space-sm); }
+  .scout-welcome__icon  { font-size: 2.5rem; }
+
+  /* ---- Filter buttons: wrap tightly ---- */
+  .hof-filter-btn       { font-size: 0.75rem; padding: 3px 10px; }
+
+  /* ---- State panels ---- */
+  .state-panel          { padding: var(--space-xl) var(--space-sm); }
+  .state-panel__icon    { font-size: 2.5rem; }
+
+  /* ---- Pagination: prev/next only, hide page numbers on tiny screens ---- */
+  .pagination-btn:not([aria-label="Previous page"]):not([aria-label="Next page"]):not(.is-active) {
+    display: none;
   }
+
+  /* ---- Footer ---- */
+  .site-footer          { margin-top: var(--space-xl); }
+  .site-footer p        { font-size: var(--fs-xs); }
+
+  /* ---- Scout teaser ---- */
+  .scout-teaser         { padding: var(--space-xl) 0; }
 }
 
-/* ---- Large desktop (>= 1400px) ----
-   Slightly widen the container ceiling for very large monitors so content
-   doesn't feel cramped in the center of the screen. */
+
+/* ============================================================
+   MID (≤ 992px) — Small laptops / large tablets
+   ============================================================ */
+@media (max-width: 992px) {
+
+  /* ---- Home hero: keep two cols but tighten gap ---- */
+  .hero__inner          { gap: var(--space-lg); }
+
+  /* ---- Legend cards: comfortable 2-col ---- */
+  .legends-grid--home   { grid-template-columns: repeat(2, 1fr); }
+}
+
+
+/* ============================================================
+   LARGE DESKTOP (≥ 1400px) — Wide monitors
+   ============================================================ */
 @media (min-width: 1400px) {
   :root {
     --container-max: 1320px;
   }
+
+  /* ---- 4-col legend grid on very wide screens ---- */
+  .legends-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* ---- Home featured: stays 3-col ---- */
+  .legends-grid--home {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+
+/* ============================================================
+   PRINT — minimal, clean output if someone prints a page
+   ============================================================ */
+@media print {
+  .navbar-custom,
+  .site-footer,
+  .hero__ctas,
+  .hof-filters,
+  .scout-search-form,
+  .scout-pagination   { display: none; }
+
+  body                { padding-top: 0; background: white; color: black; }
+  .legend-card        { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
 }

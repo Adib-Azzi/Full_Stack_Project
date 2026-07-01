@@ -1,12 +1,14 @@
 /**
- * app-hall-of-fame.js
- * Entry point for hall-of-fame.html.
- * Instantiates NavController and HallOfFameRenderer, passing in the
- * DOM element IDs defined in the HTML. This file stays intentionally thin —
- * all logic lives inside the class files it imports.
+ * app-hall-of-fame.js — Entry point for hall-of-fame.html
  */
-import { NavController } from './ui/NavController.js';
-import { HallOfFameRenderer } from './ui/HallOfFameRenderer.js';
+import { NavController }              from './ui/NavController.js';
+import { HallOfFameRenderer }         from './ui/HallOfFameRenderer.js';
+import { animateCards, initLazyImages } from './ui/animations.js';
 
 new NavController();
+
+// HallOfFameRenderer renders all 15 cards synchronously on construction,
+// so we can call animateCards() immediately after.
 new HallOfFameRenderer('legendsGrid', 'hofFilters');
+animateCards();
+initLazyImages();

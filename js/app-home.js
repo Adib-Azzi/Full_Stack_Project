@@ -1,27 +1,18 @@
 /**
- * app-home.js
- * Entry point for index.html.
- * Picks 3 "featured" legends from the curated dataset and renders
- * them as preview cards in the home page grid.
+ * app-home.js — Entry point for index.html
  */
-import { NavController } from './ui/NavController.js';
-import { HallOfFameRenderer } from './ui/HallOfFameRenderer.js';
-import { LEGENDS } from './data/legends-data.js';
+import { NavController }         from './ui/NavController.js';
+import { LEGENDS }               from './data/legends-data.js';
+import { animateCards, initLazyImages } from './ui/animations.js';
 
 new NavController();
 
-// Pick 3 iconic legends to feature on the home page (Pelé, Maradona, Messi)
-const FEATURED_IDS = ['pele', 'maradona', 'messi'];
+// ---- Featured Legends (Pelé, Maradona, Messi) ----
+const FEATURED_IDS   = ['pele', 'maradona', 'messi'];
 const featuredLegends = LEGENDS.filter((l) => FEATURED_IDS.includes(l.id));
+const featuredGrid    = document.getElementById('featuredGrid');
 
-// Reuse HallOfFameRenderer in "no filters" mode — just pass an empty filters container ID
-// We create a throw-away instance purely to call its _buildCard method via the grid.
-// Simpler: just re-use the render logic by instantiating and letting it target our home grid.
-// Since HallOfFameRenderer reads from LEGENDS directly, we temporarily swap the data approach:
-const featuredGrid = document.getElementById('featuredGrid');
 if (featuredGrid) {
-  // Build cards inline using same template approach as HallOfFameRenderer._buildCard
-  // (duplicating the template here keeps app-home.js self-contained for this preview)
   featuredGrid.innerHTML = featuredLegends.map((legend) => {
     const wcStars = '★'.repeat(legend.worldCups) + '☆'.repeat(Math.max(0, 3 - legend.worldCups));
     return `
@@ -48,13 +39,16 @@ if (featuredGrid) {
             </div>
             <div class="legend-card__stat">
               <span class="legend-card__stat-label">World Cups</span>
-              <span class="legend-card__stat-value legend-card__stat-value--stars">${wcStars}</span>
+              <span class="legend-card__stat-value legend-card__stat-value--stars" aria-label="${legend.worldCups} World Cup wins">${wcStars}</span>
             </div>
           </div>
           <p class="legend-card__bio">${legend.bio.substring(0, 160)}…</p>
-          <a href="hall-of-fame.html" class="btn-primary" style="margin-top: auto; text-align:center; display:block;">Full Profile →</a>
+          <a href="hall-of-fame.html" class="btn-primary" style="margin-top:auto;text-align:center;display:block;">Full Profiles →</a>
         </div>
-      </article>
-    `;
+      </article>`;
   }).join('');
+
+  // Animate cards into view and lazy-load images
+  animateCards();
+  initLazyImages();
 }

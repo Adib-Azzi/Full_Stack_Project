@@ -6,6 +6,8 @@
  *           store results → client-side position filter → paginate → render
  * -----------------------------------------------------------------------
  */
+import { animateCards, initLazyImages } from './animations.js';
+
 export class ScoutRenderer {
   static RESULTS_PER_PAGE = 9;
 
@@ -121,6 +123,8 @@ export class ScoutRenderer {
     this._grid.innerHTML = pageItems.map((item) => this._buildPlayerCard(item)).join('');
     this._buildPagination();
     this._grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    animateCards();
+    initLazyImages();
   }
 
   _buildPlayerCard(item) {
