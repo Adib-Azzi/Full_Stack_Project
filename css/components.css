@@ -48,7 +48,6 @@ header {
 .navbar-custom__brand:hover .navbar-custom__brand-mark svg {
   transform: rotate(180deg) scale(1.15);
   transition-duration: 0.75s;
-  color:var(--color-accent);
 }
 
 .navbar-custom__container {

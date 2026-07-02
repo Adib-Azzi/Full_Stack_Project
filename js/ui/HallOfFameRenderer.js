@@ -8,7 +8,7 @@
  * -----------------------------------------------------------------------
  */
 import { LEGENDS, getPositions, getEras } from '../data/legends-data.js';
-import { animateCards } from './animations.js';
+import { animateCards, initLazyImages  } from './animations.js';
 
 export class HallOfFameRenderer {
   constructor(gridId, filtersId) {
@@ -182,6 +182,7 @@ export class HallOfFameRenderer {
     });
 
     animateCards('.legend-card--compact');
+    initLazyImages();
   }
 
   /**
@@ -205,7 +206,6 @@ export class HallOfFameRenderer {
             loading="lazy"
             onerror="this.src='https://placehold.co/400x320/0B6E4F/F7F7F2?text=${encodeURIComponent(legend.name)}'"
           />
-          <span class="legend-card__flag" aria-hidden="true">${legend.flag}</span>
           <div class="legend-card__overlay">
             <span class="legend-card__overlay-text">View Profile</span>
           </div>
