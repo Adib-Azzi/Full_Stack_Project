@@ -48,6 +48,7 @@ header {
 .navbar-custom__brand:hover .navbar-custom__brand-mark svg {
   transform: rotate(180deg) scale(1.15);
   transition-duration: 0.75s;
+  color: var(--color-accent);
 }
 
 .navbar-custom__container {
@@ -533,11 +534,25 @@ body.modal-open { overflow:hidden; }
 .home-section__link   { font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--color-accent);transition:var(--transition-fast);white-space:nowrap; }
 .home-section__link:hover { color:var(--color-accent-dark); }
 
-.scout-teaser {
+.scout-block {
   background:linear-gradient(90deg, #111111 0%, #0A0A0A 100%);
   border-top:1px solid var(--color-border-gold);
   border-bottom:1px solid var(--color-border-gold);
   padding:var(--space-2xl) 0;margin-top:var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px; /* Space between the text block and the cards */
+  max-width: 80%;
+  margin: 40px auto;
+  padding: 0 20px;
+  border: 1px solid var(--color-border-gold);
+  border-radius: 10px;
+}
+.scout-teaser{
+  display: inline-block; 
+  flex: 1;
+  min-width: 300px;
 }
 .scout-teaser__title { font-size:var(--fs-3xl);color:var(--color-text-primary);margin:0 0 var(--space-sm); }
 .scout-teaser__text  { color:var(--color-text-secondary);font-size:var(--fs-lg);max-width:480px;margin:0 0 var(--space-md); }
@@ -676,3 +691,108 @@ body.modal-open { overflow:hidden; }
    ========================================================================== */
 img[loading="lazy"]           { opacity:0;transition:opacity 0.3s ease; }
 img[loading="lazy"].is-loaded { opacity:1; }
+
+/* --- Carousel Stage Viewport --- */
+.carousel-container {
+    flex: 1;
+    max-width: 500px; /* Shrinking the overall component boundary */
+    height: 350px;     /* Lowered from 450px to make it smaller */
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 800px; /* Adjusted depth for smaller cards */
+    margin: 0;
+}
+
+.carousel-track {
+    position: relative;
+    width: 200px; /* Sized down from 300px to make individual cards smaller */
+    height: 280px; /* Sized down from 400px */
+    transform-style: preserve-3d;
+}
+
+/* --- Base Card Styles --- */
+.carousel-card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: filter 0.5s ease;
+    animation: shiftCards 24s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Card Text Overlay */
+.card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+    color: #fff;
+}
+
+/* --- Animation Delays to Offset the Cycle --- */
+.card-1 { animation-delay: 0s; }
+.card-2 { animation-delay: -6s; }
+.card-3 { animation-delay: -12s; }
+.card-4 { animation-delay: -18s; }
+
+/* --- The 4-Stage Infinite 3D Shifting Loop --- */
+@keyframes shiftCards {
+    /* STAGE 1: Left Card (Faded back in shadow) */
+    0%, 100% {
+        transform: translate3d(-70%, 0, -100px) scale(0.85);
+        z-index: 2;
+        filter: brightness(0.4) blur(1px);
+        opacity: 1;
+    }
+    
+    /* STAGE 2: Center Card (Popping Forward, Bright) */
+    25% {
+        transform: translate3d(0, 0, 50px) scale(1.05);
+        z-index: 10;
+        filter: brightness(1) blur(0);
+        box-shadow: 0 20px 40px rgba(242, 183, 5, 0.3); /* Subtle gold glow */
+        opacity: 1;
+    }
+
+    /* STAGE 3: Right Card (Faded back in shadow) */
+    50% {
+        transform: translate3d(70%, 0, -100px) scale(0.85);
+        z-index: 2;
+        filter: brightness(0.4) blur(1px);
+        opacity: 1;
+    }
+
+    /* STAGE 4: Hidden Flash-back (Disappears from right, loops around to left) */
+    75% {
+        transform: translate3d(0, 0, -200px) scale(0.7);
+        z-index: 1;
+        filter: brightness(0);
+        opacity: 0; /* Hidden while it travels behind the scenes */
+    }
+}
+
+@media (max-width: 768px) {
+    .scout-block {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    .carousel-container {
+        width: 100%;
+        max-width: 100%;
+    }
+}

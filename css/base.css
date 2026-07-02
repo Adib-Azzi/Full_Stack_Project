@@ -44,7 +44,7 @@ p {
 .container {
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 var(--space-md);
+  padding: 10px var(--space-md);
 }
 
 /* ── Accessible focus ring (gold on dark = perfect contrast) ── */
