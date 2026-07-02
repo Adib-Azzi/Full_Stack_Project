@@ -25,13 +25,12 @@
   .navbar-custom__links.is-open { max-height:360px;opacity:1; }
 
   .navbar-custom__link {
-    padding:var(--space-sm) var(--space-md);width:100%;
+    padding-left: 10px;
     border-left:3px solid transparent;
   }
   .navbar-custom__link::after { display:none; }
   .navbar-custom__link:hover,
   .navbar-custom__link.is-active {
-    background:rgba(242,183,5,0.08);
     border-left-color:var(--color-accent);
     color:var(--color-accent);
   }

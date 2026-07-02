@@ -20,7 +20,6 @@ if (featuredGrid) {
         <div class="legend-card__img-wrap">
           <img src="images/${legend.id}.jpg" alt="Photo of ${legend.name}" class="legend-card__img" loading="lazy"
             onerror="this.src='https://placehold.co/400x300/0B6E4F/F7F7F2?text=${encodeURIComponent(legend.name)}'" />
-          <span class="legend-card__flag" aria-label="${legend.nationality}">${legend.flag}</span>
         </div>
         <div class="legend-card__body">
           <h3 class="legend-card__name">${legend.name}</h3>
