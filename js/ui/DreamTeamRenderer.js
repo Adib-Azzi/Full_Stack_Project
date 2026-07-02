@@ -42,6 +42,17 @@ const FORMATIONS = {
   ],
 };
 
+// Maps every possible slot label (across all formations) to the broad
+// position category used by both the LEGENDS dataset and the API-Football
+// live search results ('Goalkeeper' | 'Defender' | 'Midfielder' | 'Attacker').
+const SLOT_POSITION_MAP = {
+  GK:  'Goalkeeper',
+  LB:  'Defender',  CB: 'Defender', RB: 'Defender',
+  LM:  'Midfielder', CM: 'Midfielder', RM: 'Midfielder',
+  LCM: 'Midfielder', RCM: 'Midfielder',
+  LW:  'Attacker',  ST: 'Attacker', RW: 'Attacker',
+};
+
 export class DreamTeamRenderer {
   constructor(elementIds, apiService) {
     this._api           = apiService;
@@ -52,6 +63,7 @@ export class DreamTeamRenderer {
     this._modal         = null;
     this._modalBody     = null;
     this._activeSlot    = null;   // index of the slot being filled
+    this._activeCategory = null; // required position category for the active slot
     this._formation     = '4-3-3';
     this._squad         = new Array(11).fill(null); // 11 player slots
 
@@ -229,8 +241,10 @@ export class DreamTeamRenderer {
   }
 
   _openSearchModal(slotIndex, slotLabel) {
-    this._activeSlot = slotIndex;
-    this._modal.querySelector('.dt-modal__title').textContent = `Select Player — ${slotLabel}`;
+    this._activeSlot     = slotIndex;
+    this._activeCategory = SLOT_POSITION_MAP[slotLabel] || null;
+    this._modal.querySelector('.dt-modal__title').textContent =
+      `Select Player — ${slotLabel}${this._activeCategory ? ` (${this._activeCategory}s only)` : ''}`;
 
     // Reset to Legends tab
     this._modal.querySelectorAll('.dt-tab').forEach(t => t.classList.remove('is-active'));
@@ -245,7 +259,8 @@ export class DreamTeamRenderer {
   _closeModal() {
     this._modal.classList.remove('is-open');
     document.body.classList.remove('modal-open');
-    this._activeSlot = null;
+    this._activeSlot     = null;
+    this._activeCategory = null;
   }
 
   // ─────────────────────────────────────────
@@ -253,9 +268,20 @@ export class DreamTeamRenderer {
   // ─────────────────────────────────────────
 
   _renderLegendsGrid() {
+    const eligible = this._activeCategory
+      ? LEGENDS.filter(l => l.position === this._activeCategory)
+      : LEGENDS;
+
+    if (!eligible.length) {
+      this._modalBody.innerHTML = `
+        <p class="dt-search-prompt">No legends available for this position.</p>`;
+      return;
+    }
+
     this._modalBody.innerHTML = `
+      ${this._activeCategory ? `<p class="dt-position-hint">Showing ${this._activeCategory}s only</p>` : ''}
       <div class="dt-player-grid">
-        ${LEGENDS.map(l => `
+        ${eligible.map(l => `
           <button class="dt-player-pick" data-source="legend" data-id="${l.id}"
             aria-label="Select ${l.name}">
             <img src="${l.image}" alt="${l.name}"
@@ -281,12 +307,25 @@ export class DreamTeamRenderer {
     this._modalBody.innerHTML = `
       <div class="spinner" role="status"><div class="spinner__ball"></div></div>`;
     try {
-      const players = await this._api.searchPlayers(query);
+      const allPlayers = await this._api.searchPlayers(query);
+
+      // Only keep players whose position matches the slot we're filling.
+      // API-Football's `games.position` field uses the same category
+      // strings as our LEGENDS dataset (Goalkeeper/Defender/Midfielder/Attacker),
+      // so we can filter directly on that.
+      const players = this._activeCategory
+        ? allPlayers.filter(p => p.position === this._activeCategory)
+        : allPlayers;
+
       if (!players.length) {
-        this._modalBody.innerHTML = `<p class="dt-search-prompt">No players found for "${query}".</p>`;
+        const positionNote = this._activeCategory
+          ? ` who play as ${this._activeCategory}`
+          : '';
+        this._modalBody.innerHTML = `<p class="dt-search-prompt">No players found for "${query}"${positionNote}.</p>`;
         return;
       }
       this._modalBody.innerHTML = `
+        ${this._activeCategory ? `<p class="dt-position-hint">Showing ${this._activeCategory}s only</p>` : ''}
         <div class="dt-player-grid">
           ${players.slice(0, 20).map(p => `
             <button class="dt-player-pick" data-source="live" data-id="${p.id}"
@@ -319,6 +358,12 @@ export class DreamTeamRenderer {
         }
 
         if (!player) return;
+
+        // Safety net: even though the grids are pre-filtered, never allow a
+        // player whose position doesn't match the slot to be placed.
+        if (this._activeCategory && player.position !== this._activeCategory) {
+          return;
+        }
 
         // Check not already in squad
         const alreadyIn = this._squad.some(s => s && (s.id === player.id));
