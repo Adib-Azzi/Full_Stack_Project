@@ -18,15 +18,24 @@
 /* ==========================================================================
    STICKY NAVIGATION
    ========================================================================== */
-.navbar-custom {
+/* ── The <header> element wraps the nav and must be the sticky element.
+       position:sticky on the inner <nav> doesn't work because sticky
+       elements can only stick within their parent's scroll bounds —
+       and the parent <header> is the same height as the nav itself,
+       so there is no scroll room inside it. ── */
+header {
   position: sticky;
   top: 0;
+  z-index: 1000;
+}
+
+.navbar-custom {
+  position: relative;   /* no longer sticky — header handles that */
   width: 100%;
   height: var(--navbar-height);
-  background-color: var(--color-secondary);    /* near-black */
-  border-bottom: 1px solid var(--color-border-gold); /* gold hairline */
+  background-color: var(--color-secondary);
+  border-bottom: 1px solid var(--color-border-gold);
   box-shadow: 0 2px 20px rgba(0,0,0,0.6);
-  z-index: 1000;
   transition: box-shadow 0.3s ease;
 }
 .navbar-custom.is-scrolled {
@@ -393,7 +402,7 @@ body.modal-open { overflow:hidden; }
 .scout-card {
   background:var(--color-surface);border-radius:var(--radius-md);
   box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column;
-  border:1px solid var(--color-border);transition:var(--transition-base);width: 250px;
+  border:1px solid var(--color-border);transition:var(--transition-base);
 }
 .scout-card:hover { transform:translateY(-3px);box-shadow:var(--shadow-gold);border-color:var(--color-accent); }
 
@@ -469,6 +478,26 @@ body.modal-open { overflow:hidden; }
 }
 .fixtures-empty,.fixtures-error { font-size:var(--fs-xs);color:var(--color-text-secondary);padding:var(--space-xs) 0;margin:0; }
 
+
+.scout-card__team-logo  { width:22px;height:22px;object-fit:contain;flex-shrink:0; }
+.scout-card__league-logo { width:18px;height:18px;object-fit:contain;opacity:0.7;margin-left:auto; }
+
+.scout-card__stats { display:flex;justify-content:space-around;padding:var(--space-sm) var(--space-md);gap:var(--space-xs);border-top:1px solid var(--color-border); }
+.scout-card__stat  { display:flex;flex-direction:column;align-items:center;gap:2px;flex:1; }
+.scout-card__stat-val   { font-size:var(--fs-lg);font-weight:var(--fw-bold);color:var(--color-text-primary); }
+.scout-card__stat-label { font-size:var(--fs-xs);color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px; }
+
+.scout-card__rating {
+  position:absolute;top:var(--space-md);right:var(--space-md);
+  font-family:var(--font-heading);font-size:var(--fs-xl);
+  width:42px;height:42px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;font-weight:var(--fw-bold);
+  flex-shrink:0;
+}
+.rating--good { background:rgba(46,125,50,0.2);  color:#81C784;border:1px solid rgba(46,125,50,0.4); }
+.rating--avg  { background:rgba(245,127,23,0.2); color:#FFB74D;border:1px solid rgba(245,127,23,0.4); }
+.rating--poor { background:rgba(198,40,40,0.2);  color:#EF9A9A;border:1px solid rgba(198,40,40,0.4); }
+
 /* Pagination */
 .scout-pagination { display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);padding:var(--space-md) 0 var(--space-2xl); }
 .pagination-summary { font-size:var(--fs-sm);color:var(--color-text-secondary);margin:0; }
@@ -519,7 +548,7 @@ body.modal-open { overflow:hidden; }
 
 /* Keep formation select compact */
 .dt-controls__inner .scout-search-form__select {
-  flex:0 0 50px;
+  flex:0 0 110px;
   font-size:var(--fs-sm);
   padding:.45rem .8rem;
   height:36px;
@@ -527,7 +556,7 @@ body.modal-open { overflow:hidden; }
 
 /* Keep team name input compact */
 .dt-controls__name-input {
-  flex:0 1 50px !important;
+  flex:0 1 200px !important;
   font-size:var(--fs-sm) !important;
   padding:.45rem .8rem !important;
   height:36px;

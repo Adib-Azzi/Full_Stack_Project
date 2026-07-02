@@ -1,28 +1,25 @@
 /**
  * ApiService.js
  * -----------------------------------------------------------------------
- * PRIMARY: TheSportsDB v1 (free, no key required)
+ * API-Football v3 (api-sports.io) — player search + fixtures
  *
- * SEARCH STRATEGY — multi-query merge:
- *   A bare surname search like "mbappe" on TheSportsDB returns only the
- *   most prominent player (Kylian). To surface ALL matching players
- *   (Ethan, Wilfried, etc.) we:
- *     1. Run the full query as typed
- *     2. Also run each individual word (≥3 chars) as its own query
- *     3. Merge all response arrays, deduplicating by idPlayer
+ * PLAYER SEARCH STRATEGY — parallel multi-league & multi-season:
+ * API-Football requires a league ID and a season alongside any player name search.
+ * Instead of forcing the user to pick a league, we fire requests across all
+ * combinations of SEARCH_LEAGUES and SEARCH_SEASONS simultaneously via Promise.all,
+ * then merge, sort, and deduplicate the results by player ID.
  *
- *   Example: "mbappe"        → queries: ["mbappe"]
- *            "kylian mbappe" → queries: ["kylian mbappe", "kylian", "mbappe"]
- *
- *   This is done via Promise.all so all queries fire in parallel —
- *   no added latency beyond the slowest individual request.
+ * FIXTURES:
+ * Uses the team ID returned with each player's statistics to fetch
+ * last 5 and next 5 fixtures for that player's club.
  * -----------------------------------------------------------------------
  */
-import { SPORTSDB_BASE_URL } from '../../config/config.js';
+import { API_KEY, API_BASE_URL, SEARCH_LEAGUES, SEARCH_SEASONS } from '../../config/config.js';
 
 export class ApiService {
   constructor() {
-    this._base = SPORTSDB_BASE_URL;
+    this._base    = API_BASE_URL;
+    this._headers = { 'x-apisports-key': API_KEY };
   }
 
   // ─────────────────────────────────────────
@@ -30,10 +27,10 @@ export class ApiService {
   // ─────────────────────────────────────────
 
   /**
-   * Search players by name using a multi-query strategy.
-   * Returns a deduplicated, merged array of normalised player objects.
+   * Search players by name across all configured leagues and seasons in parallel.
+   * Returns a deduplicated, normalised array sorted by rating (best first).
    *
-   * @param  {string} name — player name (min 3 chars)
+   * @param  {string} name — player name, min 3 chars
    * @returns {Promise<Array>}
    */
   async searchPlayers(name) {
@@ -41,124 +38,175 @@ export class ApiService {
     if (query.length < 3) {
       throw new Error('Please enter at least 3 characters to search.');
     }
+    if (API_KEY === 'YOUR_API_KEY_HERE') {
+      throw new Error('NO_KEY');
+    }
 
-    // Build unique set of search terms: full query + individual words ≥ 3 chars
-    const terms = new Set([query]);
-    query.split(/\s+/).forEach(word => {
-      if (word.length >= 3) terms.add(word.toLowerCase());
-    });
+    // Build combinations of urls for leagues and seasons
+    const requests = SEARCH_LEAGUES.flatMap(league =>
+      SEARCH_SEASONS.map(season => ({
+        url: `${this._base}/players?search=${encodeURIComponent(query)}&league=${league.id}&season=${season}`,
+        label: `${league.name} ${season}`
+      }))
+    );
 
-    // Fire all queries in parallel
-    const responses = await Promise.all(
-      [...terms].map(term =>
-        this._fetch(
-          `${this._base}/searchplayers.php?p=${encodeURIComponent(term)}`
-        ).then(raw => raw.player || [])
-         .catch(() => [])  // one failed query never kills the whole search
+    // Fire all requests in parallel — capture data and track error logs per lookup block
+    const settled = await Promise.all(
+      requests.map(req =>
+        this._fetch(req.url)
+          .then(data => ({ data, error: null, label: req.label }))
+          .catch(err => ({ data: [], error: err.message, label: req.label }))
       )
     );
 
-    // Merge + deduplicate by player ID
+    // Separate successes from failures
+    const successes = settled.filter(r => r.data.length > 0);
+    const failures  = settled.filter(r => r.error !== null);
+
+    // If EVERY request failed, throw the first concrete informative error to the user interface
+    if (successes.length === 0 && failures.length === requests.length) {
+      const primaryError = failures.find(f => !f.error.includes('Network')) || failures[0];
+      throw new Error(primaryError.error);
+    }
+
+    // Merge and deduplicate by unique player ID across overlapping season matrices
     const seen   = new Set();
     const merged = [];
-    responses.flat().forEach(p => {
-      if (p.idPlayer && !seen.has(p.idPlayer)) {
-        seen.add(p.idPlayer);
-        merged.push(p);
+    successes.flatMap(r => r.data).forEach(item => {
+      const pid = item?.player?.id;
+      if (pid && !seen.has(pid)) {
+        seen.add(pid);
+        merged.push(item);
       }
     });
 
-    if (merged.length === 0) return []; // caller handles empty state
-
-    // Sort: put the closest name match first (e.g. "Kylian Mbappé" before
-    // "Ethan Mbappé" when searching "mbappe" — most relevant at top)
-    const lc = query.toLowerCase();
+    // Sort: highest rated players first based on performance scales
     merged.sort((a, b) => {
-      const aName = (a.strPlayer || '').toLowerCase();
-      const bName = (b.strPlayer || '').toLowerCase();
-      const aStarts = aName.startsWith(lc) ? 0 : 1;
-      const bStarts = bName.startsWith(lc) ? 0 : 1;
-      if (aStarts !== bStarts) return aStarts - bStarts;
-      // Secondary sort: exact surname match
-      const aSurname = aName.split(' ').pop();
-      const bSurname = bName.split(' ').pop();
-      const aExact   = aSurname === lc ? 0 : 1;
-      const bExact   = bSurname === lc ? 0 : 1;
-      return aExact - bExact;
+      const rA = parseFloat(a?.statistics?.[0]?.games?.rating || 0);
+      const rB = parseFloat(b?.statistics?.[0]?.games?.rating || 0);
+      return rB - rA;
     });
 
     return merged.map(this._normalisePlayer);
   }
 
   /**
-   * Fetch last 5 completed matches for a team.
-   * @param  {string} teamId — TheSportsDB team ID
+   * Fetch last 5 completed fixtures for a team.
+   * @param  {string|number} teamId — API-Football team ID
+   * @returns {Promise<Array>}
    */
   async getTeamLastFixtures(teamId) {
     if (!teamId) return [];
-    const raw = await this._fetch(`${this._base}/eventslast.php?id=${teamId}`);
-    return (raw.results || []).map(this._normaliseFixture);
+    const raw = await this._fetch(
+      `${this._base}/fixtures?team=${teamId}&last=5`
+    ).catch(() => []);
+    return raw.map(this._normaliseFixture);
   }
 
   /**
-   * Fetch next 5 upcoming matches for a team.
-   * @param  {string} teamId — TheSportsDB team ID
+   * Fetch next 5 upcoming fixtures for a team.
+   * @param  {string|number} teamId — API-Football team ID
+   * @returns {Promise<Array>}
    */
   async getTeamNextFixtures(teamId) {
     if (!teamId) return [];
-    const raw = await this._fetch(`${this._base}/eventsnext.php?id=${teamId}`);
-    return (raw.events || []).map(this._normaliseFixture);
+    const raw = await this._fetch(
+      `${this._base}/fixtures?team=${teamId}&next=5`
+    ).catch(() => []);
+    return raw.map(this._normaliseFixture);
   }
 
   /**
    * Search players by team name (used by Dream Team builder).
    * @param  {string} teamName
+   * @returns {Promise<Array>}
    */
   async searchPlayersByTeam(teamName) {
     if (!teamName || teamName.trim().length < 3) return [];
+    if (API_KEY === 'YOUR_API_KEY_HERE') return [];
+
+    // First resolve team name → team ID
+    const teams = await this._fetch(
+      `${this._base}/teams?search=${encodeURIComponent(teamName.trim())}`
+    ).catch(() => []);
+
+    if (!teams.length) return [];
+    const teamId = teams[0]?.team?.id;
+    if (!teamId) return [];
+
+    // Fetch roster data using current primary season block
     const raw = await this._fetch(
-      `${this._base}/searchplayers.php?t=${encodeURIComponent(teamName.trim())}`
-    );
-    return (raw.player || []).map(this._normalisePlayer);
+      `${this._base}/players?team=${teamId}&season=${SEARCH_SEASONS[0]}`
+    ).catch(() => []);
+
+    return raw.map(this._normalisePlayer);
   }
 
   // ─────────────────────────────────────────
   // PRIVATE — Normalisers
   // ─────────────────────────────────────────
 
-  _normalisePlayer = (p) => ({
-    id:          p.idPlayer        || '',
-    name:        p.strPlayer       || 'Unknown',
-    nationality: p.strNationality  || '—',
-    position:    p.strPosition     || '—',
-    team:        p.strTeam         || '—',
-    rawTeamId:   p.idTeam          || null,
-    height:      p.strHeight       || '',
-    weight:      p.strWeight       || '',
-    born:        p.dateBorn        || '',
-    photo:       p.strThumb        || p.strCutout || '',
-    description: p.strDescriptionEN || '',
-    age: p.dateBorn
-      ? Math.floor(
-          (Date.now() - new Date(p.dateBorn)) / (1000 * 60 * 60 * 24 * 365.25)
-        )
-      : null,
-  });
+  _normalisePlayer = (item) => {
+    const p    = item?.player                 || {};
+    const stat = (item?.statistics || [])[0]  || {};
+    const team = stat?.team                   || {};
+    const games = stat?.games                 || {};
+    const goals = stat?.goals                 || {};
+    const cards = stat?.cards                 || {};
 
-  _normaliseFixture = (e) => ({
-    id:        e.idEvent          || '',
-    homeTeam:  e.strHomeTeam      || '—',
-    awayTeam:  e.strAwayTeam      || '—',
-    homeScore: e.intHomeScore     ?? null,
-    awayScore: e.intAwayScore     ?? null,
-    date:      e.dateEvent        || '',
-    time:      e.strTime          || '',
-    league:    e.strLeague        || '',
-    venue:     e.strVenue         || '',
-    status:    e.strStatus        || '',
-    homeBadge: e.strHomeTeamBadge || '',
-    awayBadge: e.strAwayTeamBadge || '',
-  });
+    return {
+      id:           p.id            || '',
+      name:         p.name          || 'Unknown',
+      nationality:  p.nationality   || '—',
+      position:     games.position  || p.position || '—',
+      team:         team.name       || '—',
+      teamLogo:     team.logo       || '',
+      rawTeamId:    team.id         || null,
+      league:       stat?.league?.name || '',
+      leagueLogo:   stat?.league?.logo || '',
+      height:       p.height        || '',
+      weight:       p.weight        || '',
+      born:         p.birth?.date   || '',
+      photo:        p.photo         || '',
+      age:          p.age           || null,
+      appearances:  games.appearances ?? '—',
+      rating:       games.rating ? parseFloat(games.rating).toFixed(1) : null,
+      goals:        goals.total    ?? '—',
+      assists:      goals.assists   ?? '—',
+      yellowCards:  cards.yellow   ?? '—',
+      redCards:     cards.red      ?? '—',
+    };
+  };
+
+  _normaliseFixture = (item) => {
+    const fixture = item?.fixture  || {};
+    const teams   = item?.teams    || {};
+    const goals   = item?.goals    || {};
+    const league  = item?.league   || {};
+
+    const dateObj = fixture.date ? new Date(fixture.date) : null;
+    const date    = dateObj
+      ? dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+      : '';
+    const time    = dateObj
+      ? dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+      : '';
+
+    return {
+      id:        fixture.id        || '',
+      homeTeam:  teams.home?.name  || '—',
+      awayTeam:  teams.away?.name  || '—',
+      homeBadge: teams.home?.logo  || '',
+      awayBadge: teams.away?.logo  || '',
+      homeScore: goals.home        ?? null,
+      awayScore: goals.away        ?? null,
+      date,
+      time,
+      league:    league.name       || '',
+      venue:     fixture.venue?.name || '',
+      status:    fixture.status?.short || '',
+    };
+  };
 
   // ─────────────────────────────────────────
   // PRIVATE — Core fetch
@@ -167,13 +215,24 @@ export class ApiService {
   async _fetch(url) {
     let res;
     try {
-      res = await fetch(url);
+      res = await fetch(url, { headers: this._headers });
     } catch {
       throw new Error('Network error — please check your internet connection.');
     }
+
     if (!res.ok) {
-      throw new Error(`Request failed (HTTP ${res.status}). Please try again.`);
+      if (res.status === 429) throw new Error('Rate limit reached — 100 requests/day on the free plan. Try again tomorrow.');
+      if (res.status === 401 || res.status === 403) throw new Error('Invalid API key — check your key in config/config.js.');
+      throw new Error(`Request failed (HTTP ${res.status}).`);
     }
-    return res.json();
+
+    const data = await res.json();
+
+    if (data.errors && Object.keys(data.errors).length > 0) {
+      const msg = Object.values(data.errors)[0];
+      throw new Error(`API error: ${msg}`);
+    }
+
+    return data.response || [];
   }
 }

@@ -124,38 +124,67 @@ export class ScoutRenderer {
     const posClass = pos !== '—' ? pos.toLowerCase().replace(/\s+/g, '-') : 'unknown';
     const age      = player.age ? `${player.age} yrs` : '';
 
+    // Rating colour coding
+    let ratingHTML = '';
+    if (player.rating) {
+      const r   = parseFloat(player.rating);
+      const cls = r >= 7 ? 'rating--good' : r >= 6 ? 'rating--avg' : 'rating--poor';
+      ratingHTML = `<span class="scout-card__rating ${cls}" aria-label="Rating ${player.rating}">${player.rating}</span>`;
+    }
+
     return `
       <article class="scout-card" data-player-id="${player.id}" data-team-id="${player.rawTeamId || ''}"
         role="listitem" aria-label="${player.name}, ${player.nationality} ${pos}">
+
         <div class="scout-card__header">
           <div class="scout-card__photo-wrap">
             <img src="${player.photo}" alt="Photo of ${player.name}" class="scout-card__photo" loading="lazy"
-              onerror="this.src='https://placehold.co/80x80/0B6E4F/F7F7F2?text=${encodeURIComponent(player.name.charAt(0))}'"/>
+              onerror="this.src='https://placehold.co/80x80/1A1A1A/F2B705?text=${encodeURIComponent(player.name.charAt(0))}'"/>
           </div>
           <div class="scout-card__title">
             <h3 class="scout-card__name">${player.name}</h3>
             <p class="scout-card__meta">${player.nationality}${age ? ' · ' + age : ''}</p>
             <span class="legend-card__pos legend-card__pos--${posClass}">${pos}</span>
           </div>
+          ${ratingHTML}
         </div>
 
         <div class="scout-card__team">
-          <span class="scout-card__team-name">⚽ ${player.team}</span>
+          ${player.teamLogo ? `<img src="${player.teamLogo}" alt="${player.team}" class="scout-card__team-logo" />` : ''}
+          <span class="scout-card__team-name">${player.team}</span>
+          ${player.leagueLogo ? `<img src="${player.leagueLogo}" alt="${player.league}" class="scout-card__league-logo" />` : ''}
+        </div>
+
+        <div class="scout-card__stats">
+          <div class="scout-card__stat">
+            <span class="scout-card__stat-val">${player.appearances}</span>
+            <span class="scout-card__stat-label">Apps</span>
+          </div>
+          <div class="scout-card__stat">
+            <span class="scout-card__stat-val">${player.goals}</span>
+            <span class="scout-card__stat-label">Goals</span>
+          </div>
+          <div class="scout-card__stat">
+            <span class="scout-card__stat-val">${player.assists}</span>
+            <span class="scout-card__stat-label">Assists</span>
+          </div>
+          <div class="scout-card__stat">
+            <span class="scout-card__stat-val">${player.yellowCards}</span>
+            <span class="scout-card__stat-label">🟨</span>
+          </div>
         </div>
 
         <div class="scout-card__detail-row">
           ${player.height ? `<span>📏 ${player.height}</span>` : ''}
-          ${player.weight ? `<span>⚖️ ${player.weight}</span>` : ''}
           ${player.born   ? `<span>🗓️ ${player.born}</span>`   : ''}
         </div>
 
-        <!-- Fixtures toggle button -->
         ${player.rawTeamId ? `
           <button class="scout-card__fixtures-btn" data-team-id="${player.rawTeamId}"
             aria-expanded="false" aria-label="Show fixtures for ${player.team}">
             📅 Show Fixtures
           </button>
-          <div class="scout-card__fixtures-panel" data-panel-id="${player.id}" hidden></div>
+          <div class="scout-card__fixtures-panel" hidden></div>
         ` : ''}
       </article>`;
   }
@@ -319,11 +348,20 @@ export class ScoutRenderer {
   _showError(msg) {
     this._hideAllStates();
     this._error.classList.remove('state-panel--hidden');
-    this._error.innerHTML = `
-      <p class="state-panel__icon">⚠️</p>
-      <p class="state-panel__title">Something went wrong</p>
-      <p class="state-panel__msg">${msg}</p>
-      <button class="btn-primary" id="retryBtn" style="margin-top:1rem">Try Again</button>`;
+
+    const isNoKey = msg === 'NO_KEY';
+    this._error.innerHTML = isNoKey
+      ? `<p class="state-panel__icon">🔑</p>
+         <p class="state-panel__title">API Key Required</p>
+         <p class="state-panel__msg">
+           Add your free API-Football key to <code>config/config.js</code>.<br/>
+           See the <a href="about.html" style="color:var(--color-accent)">About page</a> for setup instructions.
+         </p>`
+      : `<p class="state-panel__icon">⚠️</p>
+         <p class="state-panel__title">Something went wrong</p>
+         <p class="state-panel__msg">${msg}</p>
+         <button class="btn-primary" id="retryBtn" style="margin-top:1rem">Try Again</button>`;
+
     this._error.querySelector('#retryBtn')?.addEventListener('click', () => {
       if (this._lastQuery) this._performSearch(this._lastQuery);
     });

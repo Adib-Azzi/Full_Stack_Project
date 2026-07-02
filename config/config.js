@@ -1,24 +1,33 @@
 /**
  * config.js
  * -----------------------------------------------------------------------
- * Central configuration for all external APIs.
+ * API-Football v3 (api-sports.io) — primary API for player search + fixtures
  *
- * PRIMARY API: TheSportsDB (free, no key required for v1 endpoints)
- *   - Flexible player search by name only — no league ID required
- *   - Returns position, team, nationality, photo, description
- *   - Also provides last 5 / next 5 fixtures per team (free tier)
- *   - Docs: https://www.thesportsdb.com/api.php
+ * HOW TO GET YOUR FREE KEY:
+ * 1. Go to https://dashboard.api-football.com/register
+ * 2. Create a free account (no credit card needed)
+ * 3. Copy your API key from the dashboard home screen
+ * 4. Paste it below replacing 'YOUR_API_KEY_HERE'
  *
- * SECONDARY API: API-Football (optional, requires free key)
- *   - Still used if you have a key and want deeper stats
- *   - Set API_FOOTBALL_KEY below once you have one
+ * FREE TIER LIMITS: 100 requests / day · 10 requests / minute
+ * Each search fires (leagues × seasons) parallel requests.
  * -----------------------------------------------------------------------
  */
-
-// TheSportsDB — public free tier (key "3" is their public test key)
-export const SPORTSDB_BASE_URL = 'https://www.thesportsdb.com/api/v1/json/3';
-
-// API-Football — optional, set your key here if you have one
-// Leave as 'YOUR_API_KEY_HERE' and the app will fall back to TheSportsDB only
 export const API_KEY      = 'YOUR_API_KEY_HERE';
 export const API_BASE_URL = 'https://v3.football.api-sports.io';
+
+/**
+ * Leagues searched in parallel on every player name query.
+ * Covers the top 5 European leagues — enough to find virtually
+ * any prominent professional player without requiring user input.
+ */
+export const SEARCH_LEAGUES = [
+  { id: 39,  name: 'Premier League'  },
+  { id: 140, name: 'La Liga'         },
+  { id: 78,  name: 'Bundesliga'      },
+  { id: 135, name: 'Serie A'         },
+  { id: 61,  name: 'Ligue 1'         },
+];
+
+// Search both current and previous season to handle mid-season / transfer gaps seamlessly
+export const SEARCH_SEASONS = [2024, 2023];
