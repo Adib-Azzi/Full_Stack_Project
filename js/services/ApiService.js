@@ -14,7 +14,7 @@
  * last 5 and next 5 fixtures for that player's club.
  * -----------------------------------------------------------------------
  */
-import { API_KEY, API_BASE_URL, SEARCH_LEAGUES, SEARCH_SEASONS } from '../../config/config.js';
+import { API_KEY, API_BASE_URL, SEARCH_LEAGUES, DEFAULT_SEASON } from '../../config/config.js';
 
 export class ApiService {
   constructor() {

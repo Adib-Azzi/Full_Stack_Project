@@ -243,7 +243,6 @@ header {
 .legend-card__pos--goalkeeper { background:rgba(255,193,7,0.15); color:#FFD54F; border:1px solid rgba(255,193,7,0.3); }
 .legend-card__pos--defender   { background:rgba(30,136,229,0.15); color:#64B5F6; border:1px solid rgba(30,136,229,0.3); }
 .legend-card__pos--midfielder { background:rgba(67,160,71,0.15);  color:#81C784; border:1px solid rgba(67,160,71,0.3);  }
-.legend-card__pos--attacker   { background:rgba(229,57,53,0.15);  color:#EF9A9A; border:1px solid rgba(229,57,53,0.3);  }
 .legend-card__pos--forward    { background:rgba(229,57,53,0.15);  color:#EF9A9A; border:1px solid rgba(229,57,53,0.3);  }
 .legend-card__pos--unknown    { background:rgba(255,255,255,0.07);color:var(--color-text-secondary);border:1px solid var(--color-border); }
 
@@ -395,6 +394,17 @@ body.modal-open { overflow:hidden; }
   appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888880' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 12px center;padding-right:2.2rem;
+}
+
+.season-select {
+  flex:1 1 220px;font-family:var(--font-body);font-size:var(--fs-base);
+  padding:.65rem var(--space-sm);
+  border:1.5px solid var(--color-border);
+  border-radius:var(--radius-sm);
+  background:var(--color-surface-alt);
+  color:var(--color-text-primary);
+  transition:var(--transition-fast);
+  max-width: 100px;
 }
 
 /* Position filter pills */

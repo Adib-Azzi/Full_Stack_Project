@@ -50,7 +50,7 @@ const SLOT_POSITION_MAP = {
   LB:  'Defender',  CB: 'Defender', RB: 'Defender',
   LM:  'Midfielder', CM: 'Midfielder', RM: 'Midfielder',
   LCM: 'Midfielder', RCM: 'Midfielder',
-  LW:  'Attacker',  ST: 'Attacker', RW: 'Attacker',
+  LW:  'Forward',  ST: 'Forward', RW: 'Forward',
 };
 
 export class DreamTeamRenderer {
@@ -284,7 +284,7 @@ export class DreamTeamRenderer {
         ${eligible.map(l => `
           <button class="dt-player-pick" data-source="legend" data-id="${l.id}"
             aria-label="Select ${l.name}">
-            <img src="${l.image}" alt="${l.name}"
+            <img src="images/DreamTeam/${l.id}.jpg" alt="${l.name}"
               onerror="this.src='https://placehold.co/52x52/0B6E4F/F7F7F2?text=${encodeURIComponent(l.name.charAt(0))}'"/>
             <span class="dt-player-pick__name">${l.name}</span>
             <span class="dt-player-pick__pos">${l.position}</span>

@@ -9,7 +9,7 @@
  *   name        — full display name
  *   nationality — country of origin
  *   flag        — emoji flag for visual flair (no extra asset needed)
- *   position    — one of: Goalkeeper | Defender | Midfielder | Attacker
+ *   position    — one of: Goalkeeper | Defender | Midfielder | Forward
  *   era         — loose decade label used by the filter system
  *   club        — most iconic club association
  *   years       — active career span
@@ -29,7 +29,7 @@ export const LEGENDS = [
     name: 'Pelé',
     nationality: 'Brazil',
     flag: '🇧🇷',
-    position: 'Attacker',
+    position: 'Forward',
     era: '1960s',
     club: 'Santos FC',
     years: '1956 – 1977',
@@ -45,7 +45,7 @@ export const LEGENDS = [
     name: 'Diego Maradona',
     nationality: 'Argentina',
     flag: '🇦🇷',
-    position: 'Attacker',
+    position: 'Forward',
     era: '1980s',
     club: 'SSC Napoli',
     years: '1976 – 1997',
@@ -77,7 +77,7 @@ export const LEGENDS = [
     name: 'Ronaldo (R9)',
     nationality: 'Brazil',
     flag: '🇧🇷',
-    position: 'Attacker',
+    position: 'Forward',
     era: '2000s',
     club: 'FC Barcelona / Real Madrid',
     years: '1993 – 2011',
@@ -93,7 +93,7 @@ export const LEGENDS = [
     name: 'Lionel Messi',
     nationality: 'Argentina',
     flag: '🇦🇷',
-    position: 'Attacker',
+    position: 'Forward',
     era: '2010s',
     club: 'FC Barcelona',
     years: '2004 – present',
@@ -109,7 +109,7 @@ export const LEGENDS = [
     name: 'Cristiano Ronaldo',
     nationality: 'Portugal',
     flag: '🇵🇹',
-    position: 'Attacker',
+    position: 'Forward',
     era: '2010s',
     club: 'Manchester United / Real Madrid',
     years: '2002 – present',
@@ -125,7 +125,7 @@ export const LEGENDS = [
     name: 'Johan Cruyff',
     nationality: 'Netherlands',
     flag: '🇳🇱',
-    position: 'Attacker',
+    position: 'Forward',
     era: '1970s',
     club: 'Ajax / FC Barcelona',
     years: '1964 – 1984',
@@ -237,7 +237,7 @@ export const LEGENDS = [
     name: 'Thierry Henry',
     nationality: 'France',
     flag: '🇫🇷',
-    position: 'Attacker',
+    position: 'Forward',
     era: '2000s',
     club: 'Arsenal FC',
     years: '1994 – 2012',
@@ -253,7 +253,7 @@ export const LEGENDS = [
     name: 'Gerd Müller',
     nationality: 'Germany',
     flag: '🇩🇪',
-    position: 'Attacker',
+    position: 'Forward',
     era: '1970s',
     club: 'Bayern Munich',
     years: '1963 – 1981',

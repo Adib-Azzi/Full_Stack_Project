@@ -30,4 +30,5 @@ export const SEARCH_LEAGUES = [
 ];
 
 // Search both current and previous season to handle mid-season / transfer gaps seamlessly
-export const SEARCH_SEASONS = [2024, 2023];
+export const DEFAULT_SEASON = 2025;
+export const AVAILABLE_SEASONS = [2025, 2024, 2023, 2022];

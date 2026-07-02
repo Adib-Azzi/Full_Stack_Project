@@ -84,8 +84,22 @@ export class HallOfFameRenderer {
   // ─────────────────────────────────────────
 
   _buildFilters() {
-    const positions = getPositions();
+    const originalPositions = getPositions();
     const eras      = getEras();
+
+    const positionOrder = {
+      'Goalkeeper': 1,
+      'Defender': 2,
+      'Midfielder': 3,
+      'Forward': 4
+    };
+
+    // 2. Sort the positions based on the map weights
+    const positions = [...originalPositions].sort((a, b) => {
+      const weightA = positionOrder[a] || 99; // Fallback for any unexpected values
+      const weightB = positionOrder[b] || 99;
+      return weightA - weightB;
+    });
 
     this.filtersEl.innerHTML = `
       <div class="hof-filters__group">
