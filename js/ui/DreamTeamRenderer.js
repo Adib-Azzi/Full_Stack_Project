@@ -53,6 +53,11 @@ const SLOT_POSITION_MAP = {
   LW:  'Attacker',  ST: 'Attacker', RW: 'Attacker',
 };
 
+// sessionStorage key used to persist the in-progress squad across page
+// navigations (this is a multi-page site, so clicking another nav link is
+// a full page load and would otherwise wipe all in-memory state).
+const STORAGE_KEY = 'dreamTeam:progress';
+
 export class DreamTeamRenderer {
   constructor(elementIds, apiService) {
     this._api           = apiService;
@@ -70,9 +75,50 @@ export class DreamTeamRenderer {
 
     if (!this._pitchEl) { console.error('DreamTeamRenderer: pitch element not found.'); return; }
 
+    this._loadState();
     this._injectModal();
     this._bindControls();
     this._renderPitch();
+  }
+
+  // ─────────────────────────────────────────
+  // PERSISTENCE — keeps the squad across page navigations
+  // ─────────────────────────────────────────
+
+  _saveState() {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        formation: this._formation,
+        squad:     this._squad,
+        teamName:  this._teamNameEl ? this._teamNameEl.value : '',
+      }));
+    } catch (err) {
+      console.warn('DreamTeamRenderer: could not save progress.', err);
+    }
+  }
+
+  _loadState() {
+    let saved = null;
+    try {
+      saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY));
+    } catch {
+      saved = null;
+    }
+    if (!saved) return;
+
+    if (saved.formation && FORMATIONS[saved.formation]) {
+      this._formation = saved.formation;
+      if (this._formationEl) this._formationEl.value = saved.formation;
+    }
+
+    const slotCount = FORMATIONS[this._formation].length;
+    if (Array.isArray(saved.squad) && saved.squad.length === slotCount) {
+      this._squad = saved.squad;
+    }
+
+    if (this._teamNameEl && typeof saved.teamName === 'string') {
+      this._teamNameEl.value = saved.teamName;
+    }
   }
 
   // ─────────────────────────────────────────
@@ -84,12 +130,17 @@ export class DreamTeamRenderer {
       this._formation = e.target.value;
       this._squad     = new Array(11).fill(null); // reset squad on formation change
       this._renderPitch();
+      this._saveState();
     });
 
     this._resetBtn?.addEventListener('click', () => {
       this._squad = new Array(11).fill(null);
       this._renderPitch();
+      this._saveState();
     });
+
+    // Keep the team name saved as the user types
+    this._teamNameEl?.addEventListener('input', () => this._saveState());
   }
 
   // ─────────────────────────────────────────
@@ -171,6 +222,7 @@ export class DreamTeamRenderer {
   _removePlayer(index) {
     this._squad[index] = null;
     this._renderPitch();
+    this._saveState();
   }
 
   // ─────────────────────────────────────────
@@ -312,7 +364,7 @@ export class DreamTeamRenderer {
     }
 
     this._modalBody.innerHTML = `
-      ${this._activeCategory ? `<p class="dt-position-hint">Showing ${this._activeCategory}s only</p>` : ''}
+      ${this._activeCategory ? `<p class="dt-position-hint"></p>` : ''}
       <div class="dt-player-grid">
         ${eligible.map(l => `
           <button class="dt-player-pick" data-source="legend" data-id="${l.id}"
@@ -411,6 +463,7 @@ export class DreamTeamRenderer {
         this._squad[this._activeSlot] = player;
         this._closeModal();
         this._renderPitch();
+        this._saveState();
       });
     });
   }

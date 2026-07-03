@@ -678,13 +678,13 @@ body.modal-open { overflow:hidden; }
 .dt-modal__search .scout-search-form__input { flex:1; }
 .dt-modal__body   { overflow-y:auto;padding:var(--space-sm) var(--space-md) var(--space-md);flex:1; }
 .dt-player-grid   { display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:var(--space-sm); }
-.dt-player-pick   { display:flex;flex-direction:column;align-items:center;gap:4px;padding:var(--space-xs);border-radius:var(--radius-sm);border:1.5px solid var(--color-border);background:var(--color-surface-alt);cursor:pointer;transition:var(--transition-fast);font-family:var(--font-body);text-align:center; }
+.dt-player-pick   { display:flex;flex-direction:column;align-items:center;gap:4px;padding:var(--space-xs);border-radius:var(--radius-sm);border:1.5px solid var(--color-border);background:var(--color-surface-alt);cursor:pointer;transition:var(--transition-fast);font-family:var(--font-body);text-align:center; color: var(--color-text-primary); }
 .dt-player-pick:hover { border-color:var(--color-accent);background:var(--color-accent-muted); }
 .dt-player-pick img   { width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--color-border); }
 .dt-player-pick__name { font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--color-text-primary);line-height:1.2; }
 .dt-player-pick__pos  { font-size:0.7rem;color:var(--color-text-secondary); }
 .dt-search-prompt     { text-align:center;color:var(--color-text-secondary);font-size:var(--fs-sm);padding:var(--space-lg) 0; }
-.dt-position-hint     { text-align:center;color:var(--color-primary);font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.03em;padding:var(--space-xs) 0 var(--space-sm); }
+.dt-position-hint     { text-align:center;color:var(--color-text-primary);font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.03em;padding:var(--space-xs) 0 var(--space-sm); }
 
 /* Instructions */
 .dt-instructions        { padding:0 0 var(--space-2xl); }

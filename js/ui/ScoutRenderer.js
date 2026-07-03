@@ -12,6 +12,11 @@
  */
 import { animateCards, initLazyImages } from './animations.js';
 
+// sessionStorage key used to persist the last search across page
+// navigations (this is a multi-page site, so clicking another nav link is
+// a full page load and would otherwise wipe the search results).
+const STORAGE_KEY = 'liveScout:lastSearch';
+
 export class ScoutRenderer {
   static RESULTS_PER_PAGE = 9;
 
@@ -36,7 +41,56 @@ export class ScoutRenderer {
 
     this._bindEvents();
     this._buildFixturesModalShell();
-    this._showWelcome();
+
+    if (!this._restoreState()) {
+      this._showWelcome();
+    }
+  }
+
+  // ─────────────────────────────────────────
+  // PERSISTENCE — keeps the last search across page navigations
+  // ─────────────────────────────────────────
+
+  _saveState() {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        query:       this._lastQuery,
+        season:      this._activeSeason(),
+        position:    this._activePosition(),
+        page:        this._currentPage,
+        allResults:  this._allResults,
+      }));
+    } catch (err) {
+      console.warn('ScoutRenderer: could not save search progress.', err);
+    }
+  }
+
+  _restoreState() {
+    let saved = null;
+    try {
+      saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY));
+    } catch {
+      saved = null;
+    }
+    if (!saved || !Array.isArray(saved.allResults) || saved.allResults.length === 0) {
+      return false;
+    }
+
+    this._lastQuery   = saved.query || '';
+    this._allResults  = saved.allResults;
+    this._currentPage = saved.page || 1;
+
+    if (this._input) this._input.value = this._lastQuery;
+    if (this._seasonSelect && saved.season) this._seasonSelect.value = saved.season;
+
+    if (this._posFilter && saved.position) {
+      this._posFilter.querySelectorAll('.scout-pos-btn').forEach(b => {
+        b.classList.toggle('is-active', b.dataset.pos === saved.position);
+      });
+    }
+
+    this._applyFilterAndRender();
+    return true;
   }
 
   // ─────────────────────────────────────────
@@ -64,6 +118,7 @@ export class ScoutRenderer {
       btn.classList.add('is-active');
       this._currentPage = 1;
       this._applyFilterAndRender();
+      this._saveState();
     });
   }
 
@@ -85,6 +140,7 @@ export class ScoutRenderer {
     try {
       this._allResults = await this._api.searchPlayers(query, season);
       this._applyFilterAndRender();
+      this._saveState();
     } catch (err) {
       this._showError(err.message);
     }
@@ -174,7 +230,7 @@ export class ScoutRenderer {
         </div>
 
         <div class="scout-card__detail-row">
-          ${player.height ? `<span>📏 ${player.height}</span>` : ''}
+          ${player.height ? `<span>height: ${player.height} cm</span>` : ''}
           ${player.born   ? `<span>🗓️ ${player.born}</span>`   : ''}
         </div>
 
@@ -365,6 +421,7 @@ export class ScoutRenderer {
       btn.addEventListener('click', () => {
         this._currentPage = parseInt(btn.dataset.page, 10);
         this._renderPage();
+        this._saveState();
       });
     });
   }
