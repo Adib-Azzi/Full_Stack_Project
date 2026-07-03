@@ -236,10 +236,14 @@ export class HallOfFameRenderer {
   // ─────────────────────────────────────────
 
   _buildModalContent(l) {
-    const wcStars  = '★'.repeat(l.worldCups) + '☆'.repeat(Math.max(0, 3 - l.worldCups));
+    const goldStarImg = `<img src="images/wc.png" class="wc-icon" alt="World Cup Title">`;
+    const wcDisplay = l.worldCups > 0 ? (goldStarImg.repeat(l.worldCups)) : '<span class="hof-modal__no-wc">-</span>';
     const bdorText = l.ballonDors > 0
       ? `<span class="legend-badge legend-badge--gold">🏆 ${l.ballonDors} Ballon d'Or</span>`
       : `<span class="legend-badge legend-badge--muted">No Ballon d'Or</span>`;
+    const bdorDisplay = l.ballonDors > 0
+      ? `<span class="hof-modal__stat-val">${l.ballonDors}</span>`
+      : `<span class="hof-modal__no-wc">-</span>`;
 
     return `
       <div class="hof-modal__hero">
@@ -271,11 +275,11 @@ export class HallOfFameRenderer {
           <span class="hof-modal__stat-label">Int. Goals</span>
         </div>
         <div class="hof-modal__stat">
-          <span class="hof-modal__stat-val legend-card__stat-value--stars" aria-label="${l.worldCups} World Cups">${wcStars}</span>
+          <span class="hof-modal__stat-val legend-card__stat-value--stars" aria-label="${l.worldCups} World Cups">${wcDisplay}</span>
           <span class="hof-modal__stat-label">World Cups</span>
         </div>
         <div class="hof-modal__stat">
-          <span class="hof-modal__stat-val">${l.ballonDors}</span>
+          <span class="hof-modal__stat-val">${bdorDisplay}</span>
           <span class="hof-modal__stat-label">Ballon d'Or</span>
         </div>
       </div>

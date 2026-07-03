@@ -22,7 +22,6 @@ export class ScoutRenderer {
     this._api        = apiService;
     this._form         = document.getElementById(elementIds.form);
     this._input        = document.getElementById(elementIds.input);
-    this._seasonSelect = document.getElementById(elementIds.seasonSelect);
     this._posFilter    = document.getElementById(elementIds.posFilter);
     this._grid       = document.getElementById(elementIds.grid);
     this._loading    = document.getElementById(elementIds.loading);
@@ -52,7 +51,6 @@ export class ScoutRenderer {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
         query:       this._lastQuery,
-        season:      this._activeSeason(),
         position:    this._activePosition(),
         page:        this._currentPage,
         allResults:  this._allResults,
@@ -78,7 +76,6 @@ export class ScoutRenderer {
     this._currentPage = saved.page || 1;
 
     if (this._input) this._input.value = this._lastQuery;
-    if (this._seasonSelect && saved.season) this._seasonSelect.value = saved.season;
 
     if (this._posFilter && saved.position) {
       this._posFilter.querySelectorAll('.scout-pos-btn').forEach(b => {
@@ -104,7 +101,7 @@ export class ScoutRenderer {
       }
       this._lastQuery   = query;
       this._currentPage = 1;
-      await this._performSearch(query, this._activeSeason());
+      await this._performSearch(query);
     });
 
     // Client-side position filter — pill buttons rendered in HTML
@@ -220,7 +217,7 @@ export class ScoutRenderer {
     };
 
     const teamLogo = (src, name) => src
-      ? `<img src="${src}" alt="${name}" class="fixture-row__team-logo" title="${name}"
+      ? `<img src="${src}" alt="${name}" class="fixture-row__team-logo"
            onerror="this.style.visibility='hidden'"/>`
       : '';
 
@@ -254,18 +251,14 @@ export class ScoutRenderer {
     return active?.dataset.pos || '';
   }
 
-  _activeSeason() {
-    return this._seasonSelect?.value || '2025';
-  }
-
   // ─────────────────────────────────────────
   // Search + Filter pipeline
   // ─────────────────────────────────────────
 
-  async _performSearch(query, season) {
+  async _performSearch(query) {
     this._showLoading();
     try {
-      this._allResults = await this._api.searchPlayers(query, season);
+      this._allResults = await this._api.searchPlayers(query);
       this._applyFilterAndRender();
       this._saveState();
     } catch (err) {
@@ -453,7 +446,7 @@ export class ScoutRenderer {
          <button class="btn-primary" id="retryBtn" style="margin-top:1rem">Try Again</button>`;
 
     this._error.querySelector('#retryBtn')?.addEventListener('click', () => {
-      if (this._lastQuery) this._performSearch(this._lastQuery, this._activeSeason());
+      if (this._lastQuery) this._performSearch(this._lastQuery);
     });
   }
 

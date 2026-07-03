@@ -164,7 +164,8 @@ export class ApiService {
    * to send ("Goalkeeper"/"Defender"/"Midfielder"/"Forward"), so map it.
    */
   _mapPosition(code) {
-    const map = { GK: 'Goalkeeper', G: 'Goalkeeper',
+    const map = { 
+      GK: 'Goalkeeper', G: 'Goalkeeper',
       CB: 'Defender', D: 'Defender', LB: 'Defender', LWB: 'Defender', RB: 'Defender', RWB: 'Defender', 
       AM: 'Midfielder', CM: 'Midfielder', LM: 'Midfielder', M: 'Midfielder', RM: 'Midfielder', 
       F: 'Forward', FW: 'Forward', LW: 'Forward', RW: 'Forward', SS: 'Forward', ST: 'Forward'};

@@ -46,9 +46,9 @@ const FORMATIONS = {
 // position category used by both the LEGENDS dataset and the API-Football
 // live search results ('Goalkeeper' | 'Defender' | 'Midfielder' | 'Forward').
 const SLOT_POSITION_MAP = {
-      GK: 'Goalkeeper', G: 'Goalkeeper',
+  GK: 'Goalkeeper', G: 'Goalkeeper',
       CB: 'Defender', D: 'Defender', LB: 'Defender', LWB: 'Defender', RB: 'Defender', RWB: 'Defender', 
-      AM: 'Midfielder', CM: 'Midfielder', LM: 'Midfielder', M: 'Midfielder', RM: 'Midfielder', 
+      AM: 'Midfielder', CM: 'Midfielder', LM: 'Midfielder', M: 'Midfielder', RM: 'Midfielder',  LCM: 'Midfielder', RCM: 'Midfielder',
       F: 'Forward', FW: 'Forward', LW: 'Forward', RW: 'Forward', SS: 'Forward', ST: 'Forward'
 };
 
@@ -284,12 +284,13 @@ export class DreamTeamRenderer {
         const liveSearchEl = overlay.querySelector('#dtLiveSearch');
         const legendsSearchEl = overlay.querySelector('#dtLegendsSearch');
         if (isLive) {
-            liveSearchEl.classList.remove('is-hidden');
-            legendsSearchEl.classList.add('is-hidden');
+            liveSearchEl.hidden = false;
+            legendsSearchEl.hidden = true;
             this._renderLiveSearchPrompt();
         } else {
-            liveSearchEl.classList.add('is-hidden');
-            legendsSearchEl.classList.remove('is-hidden');
+            liveSearchEl.hidden = true;
+            legendsSearchEl.hidden = false;
+            overlay.querySelector('#dtSearchInput').value = '';
             this._renderLegendsGrid();
         }
       });
@@ -329,6 +330,7 @@ export class DreamTeamRenderer {
     this._modal.querySelector('#dtLegendsSearch').hidden = false;
     this._legendsQuery = '';
     this._modal.querySelector('#dtLegendsSearchInput').value = '';
+    this._modal.querySelector('#dtSearchInput').value = '';
 
     this._renderLegendsGrid();
     this._modal.classList.add('is-open');

@@ -7,7 +7,6 @@ new NavController();
 new ScoutRenderer(new ApiService(), {
   form:         'scoutSearchForm',
   input:        'scoutSearchInput',
-  seasonSelect: 'scoutSeasonSelect',
   posFilter:    'scoutPositionFilter',
   grid:         'scoutResultsGrid',
   loading:      'scoutLoadingState',
