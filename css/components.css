@@ -248,7 +248,7 @@ header {
 .legend-card__pos--goalkeeper { background:rgba(255,193,7,0.15); color:#FFD54F; border:1px solid rgba(255,193,7,0.3); }
 .legend-card__pos--defender   { background:rgba(30,136,229,0.15); color:#64B5F6; border:1px solid rgba(30,136,229,0.3); }
 .legend-card__pos--midfielder { background:rgba(67,160,71,0.15);  color:#81C784; border:1px solid rgba(67,160,71,0.3);  }
-.legend-card__pos--forward    { background:rgba(229,57,53,0.15);  color:#EF9A9A; border:1px solid rgba(229,57,53,0.3);  }
+.legend-card__pos--attacker    { background:rgba(229,57,53,0.15);  color:#EF9A9A; border:1px solid rgba(229,57,53,0.3);  }
 .legend-card__pos--unknown    { background:rgba(255,255,255,0.07);color:var(--color-text-secondary);border:1px solid var(--color-border); }
 
 /* ==========================================================================
@@ -424,11 +424,19 @@ body.modal-open { overflow:hidden; }
 .scout-pos-btn:hover     { border-color:var(--color-accent);color:var(--color-accent); }
 .scout-pos-btn.is-active { background:var(--color-accent);color:var(--color-text-on-accent);border-color:var(--color-accent); }
 
+/* Fix #4: widen the scout results grid + give each card more breathing room
+   (scoped to #scoutResultsGrid so the shared .legends-grid class elsewhere is untouched) */
+#scoutResultsGrid.legends-grid {
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  gap:var(--space-lg);
+}
+
 /* Scout card */
 .scout-card {
   background:var(--color-surface);border-radius:var(--radius-md);
   box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column;
   border:1px solid var(--color-border);transition:var(--transition-base);
+  flex-basis:260px;max-width:340px;width:100%;
 }
 .scout-card:hover { transform:translateY(-3px);box-shadow:var(--shadow-gold);border-color:var(--color-accent); }
 
@@ -513,16 +521,13 @@ body.modal-open { overflow:hidden; }
 .scout-card__stat-val   { font-size:var(--fs-lg);font-weight:var(--fw-bold);color:var(--color-text-primary); }
 .scout-card__stat-label { font-size:var(--fs-xs);color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px; }
 
-.scout-card__rating {
-  position:absolute;top:var(--space-md);right:var(--space-md);
-  font-family:var(--font-heading);font-size:var(--fs-xl);
-  width:42px;height:42px;border-radius:var(--radius-sm);
-  display:flex;align-items:center;justify-content:center;font-weight:var(--fw-bold);
-  flex-shrink:0;
+/* Rating badge removed (Fix #1) — was overlapping the player name */
+
+.scout-card__stats-label {
+  font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--color-text-secondary);
+  text-transform:uppercase;letter-spacing:.5px;
+  margin:var(--space-xs) 0 0;padding:0 var(--space-md);
 }
-.rating--good { background:rgba(46,125,50,0.2);  color:#81C784;border:1px solid rgba(46,125,50,0.4); }
-.rating--avg  { background:rgba(245,127,23,0.2); color:#FFB74D;border:1px solid rgba(245,127,23,0.4); }
-.rating--poor { background:rgba(198,40,40,0.2);  color:#EF9A9A;border:1px solid rgba(198,40,40,0.4); }
 
 /* Pagination */
 .scout-pagination { display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);padding:var(--space-md) 0 var(--space-2xl); }
@@ -774,7 +779,7 @@ img[loading="lazy"].is-loaded { opacity:1; }
         opacity: 1;
     }
     
-    /* STAGE 2: Center Card (Popping Forward, Bright) */
+    /* STAGE 2: Center Card (Popping Attacker, Bright) */
     25% {
         transform: translate3d(0, 0, 50px) scale(1.05);
         z-index: 10;

@@ -50,7 +50,7 @@ const SLOT_POSITION_MAP = {
   LB:  'Defender',  CB: 'Defender', RB: 'Defender',
   LM:  'Midfielder', CM: 'Midfielder', RM: 'Midfielder',
   LCM: 'Midfielder', RCM: 'Midfielder',
-  LW:  'Forward',  ST: 'Forward', RW: 'Forward',
+  LW:  'Attacker',  ST: 'Attacker', RW: 'Attacker',
 };
 
 export class DreamTeamRenderer {
@@ -138,13 +138,16 @@ export class DreamTeamRenderer {
     const style  = `left:${slot.x}%;top:${slot.y}%`;
 
     if (player) {
+      const isLivePlayer = player.photo && (player.photo.includes('api-sports') || player.photo.includes('api-football'));
+      
+      const playerImage = isLivePlayer ? player.photo : `images/DreamTeam/${player.id}.jpg`;
       return `
         <div class="pitch-slot pitch-slot--filled" style="${style}"
           data-slot-index="${index}" role="button" tabindex="0"
           aria-label="Remove ${player.name} from ${slot.label}">
           <div class="pitch-slot__avatar">
             <img
-              src="images/DreamTeam/${player.id}.jpg"
+              src="${playerImage}"
               alt="${player.name}"
               class="pitch-slot__img"
               onerror="this.src='https://placehold.co/60x60/0B6E4F/F7F7F2?text=${encodeURIComponent(player.name.charAt(0))}'"
@@ -337,8 +340,9 @@ export class DreamTeamRenderer {
     this._modalBody.innerHTML = `
       <div class="spinner" role="status"><div class="spinner__ball"></div></div>`;
     try {
-      // Dream Team always searches the 2025 season — no season picker here.
-      const allPlayers = await this._api.searchPlayers(query, 2025);
+      // Free API-Football plans only cover seasons 2022–2024, so the
+      // Dream Team live search is pinned to the latest supported season (2024).
+      const allPlayers = await this._api.searchPlayers(query, 2024);
 
       // Only keep players whose position matches the slot we're filling.
       // API-Football's `games.position` field uses the same category

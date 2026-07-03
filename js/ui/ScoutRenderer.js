@@ -31,11 +31,11 @@ export class ScoutRenderer {
     this._filtered      = [];
     this._currentPage   = 1;
     this._lastQuery     = '';
-    this._expandedCardId = null; // tracks which card has fixtures open
 
     if (!this._form || !this._grid) { console.error('ScoutRenderer: elements missing.'); return; }
 
     this._bindEvents();
+    this._buildFixturesModalShell();
     this._showWelcome();
   }
 
@@ -53,7 +53,6 @@ export class ScoutRenderer {
       }
       this._lastQuery   = query;
       this._currentPage = 1;
-      this._expandedCardId = null;
       await this._performSearch(query, this._activeSeason());
     });
 
@@ -129,13 +128,8 @@ export class ScoutRenderer {
     const posClass = pos !== '—' ? pos.toLowerCase().replace(/\s+/g, '-') : 'unknown';
     const age      = player.age ? `${player.age} yrs` : '';
 
-    // Rating colour coding
-    let ratingHTML = '';
-    if (player.rating) {
-      const r   = parseFloat(player.rating);
-      const cls = r >= 7 ? 'rating--good' : r >= 6 ? 'rating--avg' : 'rating--poor';
-      ratingHTML = `<span class="scout-card__rating ${cls}" aria-label="Rating ${player.rating}">${player.rating}</span>`;
-    }
+    // Fix #2: only render a value when we actually have one — no bare dashes.
+    const statVal = (v) => (v === '—' || v === null || v === undefined || v === '') ? '' : v;
 
     return `
       <article class="scout-card" data-player-id="${player.id}" data-team-id="${player.rawTeamId || ''}"
@@ -151,7 +145,6 @@ export class ScoutRenderer {
             <p class="scout-card__meta">${player.nationality}${age ? ' · ' + age : ''}</p>
             <span class="legend-card__pos legend-card__pos--${posClass}">${pos}</span>
           </div>
-          ${ratingHTML}
         </div>
 
         <div class="scout-card__team">
@@ -160,21 +153,22 @@ export class ScoutRenderer {
           ${player.leagueLogo ? `<img src="${player.leagueLogo}" alt="${player.league}" class="scout-card__league-logo" />` : ''}
         </div>
 
+        <p class="scout-card__stats-label">League Stats</p>
         <div class="scout-card__stats">
           <div class="scout-card__stat">
-            <span class="scout-card__stat-val">${player.appearances}</span>
+            <span class="scout-card__stat-val">${statVal(player.appearances)}</span>
             <span class="scout-card__stat-label">Apps</span>
           </div>
           <div class="scout-card__stat">
-            <span class="scout-card__stat-val">${player.goals}</span>
+            <span class="scout-card__stat-val">${statVal(player.goals)}</span>
             <span class="scout-card__stat-label">Goals</span>
           </div>
           <div class="scout-card__stat">
-            <span class="scout-card__stat-val">${player.assists}</span>
+            <span class="scout-card__stat-val">${statVal(player.assists)}</span>
             <span class="scout-card__stat-label">Assists</span>
           </div>
           <div class="scout-card__stat">
-            <span class="scout-card__stat-val">${player.yellowCards}</span>
+            <span class="scout-card__stat-val">${statVal(player.yellowCards)}</span>
             <span class="scout-card__stat-label">🟨</span>
           </div>
         </div>
@@ -186,51 +180,104 @@ export class ScoutRenderer {
 
         ${player.rawTeamId ? `
           <button class="scout-card__fixtures-btn" data-team-id="${player.rawTeamId}"
-            aria-expanded="false" aria-label="Show fixtures for ${player.team}">
+            aria-haspopup="dialog" aria-label="Show fixtures for ${player.team}">
             📅 Show Fixtures
           </button>
-          <div class="scout-card__fixtures-panel" hidden></div>
         ` : ''}
       </article>`;
   }
 
-  // ── Fixtures inline expansion ──
+  // ── Fixtures pop-up modal (Fix #5 — no more inline card expansion) ──
   _bindCardClicks() {
     this._grid.querySelectorAll('.scout-card__fixtures-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const card      = btn.closest('.scout-card');
-        const panel     = card.querySelector('.scout-card__fixtures-panel');
-        const teamId    = btn.dataset.teamId;
-        const isOpen    = btn.getAttribute('aria-expanded') === 'true';
-
-        if (isOpen) {
-          panel.hidden = true;
-          btn.setAttribute('aria-expanded', 'false');
-          btn.textContent = '📅 Show Fixtures';
-          return;
-        }
-
-        // Load fixtures
-        btn.textContent = '⏳ Loading…';
-        btn.disabled    = true;
-
-        try {
-          const [past, next] = await Promise.all([
-            this._api.getTeamLastFixtures(teamId),
-            this._api.getTeamNextFixtures(teamId),
-          ]);
-          panel.innerHTML  = this._buildFixturesPanel(past, next);
-          panel.hidden     = false;
-          btn.setAttribute('aria-expanded', 'true');
-          btn.textContent  = '📅 Hide Fixtures';
-        } catch {
-          panel.innerHTML = `<p class="fixtures-error">Could not load fixtures.</p>`;
-          panel.hidden    = false;
-        } finally {
-          btn.disabled = false;
-        }
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.scout-card');
+        const teamId = btn.dataset.teamId;
+        const playerId = card.dataset.playerId;
+        const player = this._filtered.find(p => String(p.id) === String(playerId));
+        this._openFixturesModal(player, teamId);
       });
     });
+  }
+
+  /**
+   * Builds the (hidden) modal shell once and appends it to <body>.
+   * Reused for every "Show Fixtures" click — only its contents change.
+   */
+  _buildFixturesModalShell() {
+    if (document.getElementById('scoutFixturesModalOverlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'scoutFixturesModalOverlay';
+    overlay.className = 'hof-modal-overlay';
+    overlay.innerHTML = `
+      <div class="hof-modal" role="dialog" aria-modal="true" aria-labelledby="scoutFixturesModalTitle">
+        <button class="hof-modal__close" id="scoutFixturesModalClose" aria-label="Close">✕</button>
+        <div class="hof-modal__inner" id="scoutFixturesModalBody"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    this._fixturesModalOverlay = overlay;
+    this._fixturesModalBody    = overlay.querySelector('#scoutFixturesModalBody');
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) this._closeFixturesModal();
+    });
+    overlay.querySelector('#scoutFixturesModalClose')
+      .addEventListener('click', () => this._closeFixturesModal());
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) this._closeFixturesModal();
+    });
+  }
+
+  async _openFixturesModal(player, teamId) {
+    if (!player) return;
+    document.body.classList.add('modal-open');
+    this._fixturesModalBody.innerHTML = `
+      ${this._buildModalPlayerStats(player)}
+      <div class="spinner" role="status" aria-label="Loading"><div class="spinner__ball"></div></div>`;
+    this._fixturesModalOverlay.classList.add('is-open');
+
+    try {
+      const [past, next] = await Promise.all([
+        this._api.getTeamLastFixtures(teamId),
+        this._api.getTeamNextFixtures(teamId),
+      ]);
+      this._fixturesModalBody.innerHTML =
+        this._buildModalPlayerStats(player) + this._buildFixturesPanel(past, next);
+    } catch {
+      this._fixturesModalBody.innerHTML =
+        this._buildModalPlayerStats(player) + `<p class="fixtures-error">Could not load fixtures.</p>`;
+    }
+  }
+
+  _closeFixturesModal() {
+    this._fixturesModalOverlay?.classList.remove('is-open');
+    document.body.classList.remove('modal-open');
+  }
+
+  /**
+   * Player stats block shown at the top of the fixtures modal,
+   * stacked above the fixtures list.
+   */
+  _buildModalPlayerStats(player) {
+    const statVal = (v) => (v === '—' || v === null || v === undefined || v === '') ? '—' : v;
+    return `
+      <div class="hof-modal__hero">
+        <img src="${player.photo}" alt="Photo of ${player.name}" class="hof-modal__photo"
+          onerror="this.src='https://placehold.co/96x96/1A1A1A/F2B705?text=${encodeURIComponent(player.name.charAt(0))}'"/>
+        <div class="hof-modal__title-block">
+          <h3 class="hof-modal__name" id="scoutFixturesModalTitle">${player.name}</h3>
+          <p class="hof-modal__sub">${player.team}${player.league ? ' · ' + player.league : ''}</p>
+        </div>
+      </div>
+      <p class="scout-card__stats-label">League Stats</p>
+      <div class="hof-modal__stats-row">
+        <div class="hof-modal__stat"><span class="hof-modal__stat-val">${statVal(player.appearances)}</span><span class="hof-modal__stat-label">Apps</span></div>
+        <div class="hof-modal__stat"><span class="hof-modal__stat-val">${statVal(player.goals)}</span><span class="hof-modal__stat-label">Goals</span></div>
+        <div class="hof-modal__stat"><span class="hof-modal__stat-val">${statVal(player.assists)}</span><span class="hof-modal__stat-label">Assists</span></div>
+        <div class="hof-modal__stat"><span class="hof-modal__stat-val">${statVal(player.yellowCards)}</span><span class="hof-modal__stat-label">🟨</span></div>
+      </div>`;
   }
 
   /**
