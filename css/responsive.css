@@ -66,9 +66,6 @@
   .about-steps          { padding-left:var(--space-md); }
   .pagination-btn       { padding:5px 10px;font-size:var(--fs-xs); }
 
-  /* Fixtures panel: stack on mobile */
-  .fixtures-panel { grid-template-columns:1fr; }
-
   /* Dream team controls compact on mobile */
   .dt-controls__inner { flex-direction:column;align-items:stretch; }
   .dt-controls__inner .scout-search-form__select { flex:1;width:100%; }
@@ -101,9 +98,6 @@
   .state-panel         { padding:var(--space-xl) var(--space-sm); }
   .state-panel__icon   { font-size:2.5rem; }
   .site-footer         { margin-top:var(--space-xl); }
-
-  /* Fixture names even shorter on phones */
-  .fixture-row__team-name { max-width:52px;font-size:0.65rem; }
 
   /* Pagination: show only prev/active/next */
   .pagination-btn:not([aria-label="Previous page"]):not([aria-label="Next page"]):not(.is-active) { display:none; }

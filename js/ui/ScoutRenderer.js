@@ -6,8 +6,6 @@
  * Changes from previous version:
  *   - Search is name-only (no league required) — TheSportsDB handles it
  *   - Position filter is now a client-side pill bar (not a dropdown)
- *   - Clicking a player card expands an inline fixtures panel showing
- *     last 5 results + next 5 upcoming matches for the player's team
  * -----------------------------------------------------------------------
  */
 import { animateCards, initLazyImages } from './animations.js';
@@ -40,7 +38,6 @@ export class ScoutRenderer {
     if (!this._form || !this._grid) { console.error('ScoutRenderer: elements missing.'); return; }
 
     this._bindEvents();
-    this._buildFixturesModalShell();
 
     if (!this._restoreState()) {
       this._showWelcome();
@@ -172,7 +169,6 @@ export class ScoutRenderer {
     const pageItems = this._filtered.slice(start, start + ScoutRenderer.RESULTS_PER_PAGE);
 
     this._grid.innerHTML = pageItems.map(p => this._buildPlayerCard(p)).join('');
-    this._bindCardClicks();
     this._buildPagination();
     animateCards('.scout-card');
     initLazyImages();
@@ -234,159 +230,7 @@ export class ScoutRenderer {
           ${player.born   ? `<span>🗓️ ${player.born}</span>`   : ''}
         </div>
 
-        ${player.rawTeamId ? `
-          <button class="scout-card__fixtures-btn" data-team-id="${player.rawTeamId}"
-            aria-haspopup="dialog" aria-label="Show fixtures for ${player.team}">
-            📅 Show Fixtures
-          </button>
-        ` : ''}
       </article>`;
-  }
-
-  // ── Fixtures pop-up modal (Fix #5 — no more inline card expansion) ──
-  _bindCardClicks() {
-    this._grid.querySelectorAll('.scout-card__fixtures-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const card = btn.closest('.scout-card');
-        const teamId = btn.dataset.teamId;
-        const playerId = card.dataset.playerId;
-        const player = this._filtered.find(p => String(p.id) === String(playerId));
-        this._openFixturesModal(player, teamId);
-      });
-    });
-  }
-
-  /**
-   * Builds the (hidden) modal shell once and appends it to <body>.
-   * Reused for every "Show Fixtures" click — only its contents change.
-   */
-  _buildFixturesModalShell() {
-    if (document.getElementById('scoutFixturesModalOverlay')) return;
-
-    const overlay = document.createElement('div');
-    overlay.id = 'scoutFixturesModalOverlay';
-    overlay.className = 'hof-modal-overlay';
-    overlay.innerHTML = `
-      <div class="hof-modal" role="dialog" aria-modal="true" aria-labelledby="scoutFixturesModalTitle">
-        <button class="hof-modal__close" id="scoutFixturesModalClose" aria-label="Close">✕</button>
-        <div class="hof-modal__inner" id="scoutFixturesModalBody"></div>
-      </div>`;
-    document.body.appendChild(overlay);
-
-    this._fixturesModalOverlay = overlay;
-    this._fixturesModalBody    = overlay.querySelector('#scoutFixturesModalBody');
-
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) this._closeFixturesModal();
-    });
-    overlay.querySelector('#scoutFixturesModalClose')
-      .addEventListener('click', () => this._closeFixturesModal());
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && overlay.classList.contains('is-open')) this._closeFixturesModal();
-    });
-  }
-
-  async _openFixturesModal(player, teamId) {
-    if (!player) return;
-    document.body.classList.add('modal-open');
-    this._fixturesModalBody.innerHTML = `
-      ${this._buildModalPlayerStats(player)}
-      <div class="spinner" role="status" aria-label="Loading"><div class="spinner__ball"></div></div>`;
-    this._fixturesModalOverlay.classList.add('is-open');
-
-    try {
-      const [past, next] = await Promise.all([
-        this._api.getTeamLastFixtures(teamId),
-        this._api.getTeamNextFixtures(teamId),
-      ]);
-      this._fixturesModalBody.innerHTML =
-        this._buildModalPlayerStats(player) + this._buildFixturesPanel(past, next);
-    } catch {
-      this._fixturesModalBody.innerHTML =
-        this._buildModalPlayerStats(player) + `<p class="fixtures-error">Could not load fixtures.</p>`;
-    }
-  }
-
-  _closeFixturesModal() {
-    this._fixturesModalOverlay?.classList.remove('is-open');
-    document.body.classList.remove('modal-open');
-  }
-
-  /**
-   * Player stats block shown at the top of the fixtures modal,
-   * stacked above the fixtures list.
-   */
-  _buildModalPlayerStats(player) {
-    const statVal = (v) => (v === '—' || v === null || v === undefined || v === '') ? '—' : v;
-    return `
-      <div class="hof-modal__hero">
-        <img src="${player.photo}" alt="Photo of ${player.name}" class="hof-modal__photo"
-          onerror="this.src='https://placehold.co/96x96/1A1A1A/F2B705?text=${encodeURIComponent(player.name.charAt(0))}'"/>
-        <div class="hof-modal__title-block">
-          <h3 class="hof-modal__name" id="scoutFixturesModalTitle">${player.name}</h3>
-          <p class="hof-modal__sub">${player.team}${player.league ? ' · ' + player.league : ''}</p>
-        </div>
-      </div>
-      <p class="scout-card__stats-label">League Stats</p>
-      <div class="hof-modal__stats-row">
-        <div class="hof-modal__stat"><span class="hof-modal__stat-val">${statVal(player.appearances)}</span><span class="hof-modal__stat-label">Apps</span></div>
-        <div class="hof-modal__stat"><span class="hof-modal__stat-val">${statVal(player.goals)}</span><span class="hof-modal__stat-label">Goals</span></div>
-        <div class="hof-modal__stat"><span class="hof-modal__stat-val">${statVal(player.assists)}</span><span class="hof-modal__stat-label">Assists</span></div>
-        <div class="hof-modal__stat"><span class="hof-modal__stat-val">${statVal(player.yellowCards)}</span><span class="hof-modal__stat-label">🟨</span></div>
-      </div>`;
-  }
-
-  /**
-   * Build the fixtures panel HTML — last 5 results + next 5 upcoming.
-   */
-  _buildFixturesPanel(past, next) {
-    const renderFixture = (f, isResult) => {
-      const scored  = f.homeScore !== null && f.awayScore !== null;
-      const score   = (isResult && scored) ? `${f.homeScore} – ${f.awayScore}` : (f.time || 'TBC');
-      const homeBadge = f.homeBadge
-        ? `<img src="${f.homeBadge}" alt="${f.homeTeam}" class="fixture-row__badge"
-             onerror="this.style.display='none'" />`
-        : '';
-      const awayBadge = f.awayBadge
-        ? `<img src="${f.awayBadge}" alt="${f.awayTeam}" class="fixture-row__badge"
-             onerror="this.style.display='none'" />`
-        : '';
-      return `
-        <div class="fixture-row">
-          <span class="fixture-row__date">${f.date}${f.league ? ' · ' + f.league : ''}</span>
-          <div class="fixture-row__matchup">
-            <span class="fixture-row__team">
-              ${homeBadge}
-              <span class="fixture-row__team-name">${f.homeTeam}</span>
-            </span>
-            <span class="fixture-row__score-center">${score}</span>
-            <span class="fixture-row__team fixture-row__team--away">
-              <span class="fixture-row__team-name">${f.awayTeam}</span>
-              ${awayBadge}
-            </span>
-          </div>
-        </div>`;
-    };
-
-    const pastHTML = past.length
-      ? past.slice(0, 5).map(f => renderFixture(f, true)).join('')
-      : '<p class="fixtures-empty">No recent results available.</p>';
-
-    const nextHTML = next.length
-      ? next.slice(0, 5).map(f => renderFixture(f, false)).join('')
-      : '<p class="fixtures-empty">No upcoming fixtures available.</p>';
-
-    return `
-      <div class="fixtures-panel">
-        <div class="fixtures-section">
-          <h5 class="fixtures-section__title">📊 Last 5 Results</h5>
-          ${pastHTML}
-        </div>
-        <div class="fixtures-section">
-          <h5 class="fixtures-section__title">🗓️ Next 5 Fixtures</h5>
-          ${nextHTML}
-        </div>
-      </div>`;
   }
 
   // ─────────────────────────────────────────

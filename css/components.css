@@ -367,7 +367,7 @@ body.modal-open { overflow:hidden; }
 @keyframes spinBall { to { transform:rotate(360deg); } }
 
 /* ==========================================================================
-   LIVE SCOUT — search form, cards, fixtures
+   LIVE SCOUT — search form, cards
    ========================================================================== */
 .scout-search-form {
   background:var(--color-surface);
@@ -450,68 +450,6 @@ body.modal-open { overflow:hidden; }
 .scout-card__team { display:flex;align-items:center;gap:var(--space-xs);padding:var(--space-xs) var(--space-md);background:var(--color-surface-alt);border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border); }
 .scout-card__team-name { font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--color-text-primary);flex:1; }
 .scout-card__detail-row { display:flex;flex-wrap:wrap;gap:var(--space-xs);padding:var(--space-xs) var(--space-md);font-size:var(--fs-xs);color:var(--color-text-secondary); }
-
-/* Fixtures button */
-.scout-card__fixtures-btn {
-  margin:var(--space-xs) var(--space-md) var(--space-sm);
-  font-family:var(--font-body);font-size:var(--fs-xs);font-weight:var(--fw-semibold);
-  padding:5px 14px;border-radius:var(--radius-sm);
-  border:1px solid var(--color-border-gold);color:var(--color-accent);
-  background:transparent;cursor:pointer;transition:var(--transition-fast);align-self:flex-start;
-}
-.scout-card__fixtures-btn:hover   { background:var(--color-accent);color:var(--color-text-on-accent); }
-.scout-card__fixtures-btn:disabled { opacity:.5;cursor:wait; }
-
-.scout-card__fixtures-panel { border-top:1px solid var(--color-border); }
-
-/* ── Fixture rows — logo · score · logo layout (Fix #1) ── */
-.fixtures-panel {
-  padding:var(--space-sm) var(--space-md);
-  display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);
-}
-.fixtures-section__title {
-  font-size:var(--fs-xs);font-weight:var(--fw-bold);
-  color:var(--color-accent);text-transform:uppercase;letter-spacing:.5px;
-  margin:0 0 8px;
-}
-.fixture-row {
-  padding:6px 0;border-bottom:1px solid var(--color-border);
-}
-.fixture-row:last-child { border-bottom:none; }
-.fixture-row__date {
-  font-size:0.7rem;color:var(--color-text-secondary);
-  display:block;margin-bottom:4px;
-}
-
-/* The key layout: badge · name ··· score ··· name · badge */
-.fixture-row__matchup {
-  display:flex;align-items:center;gap:6px;
-}
-.fixture-row__team {
-  display:flex;align-items:center;gap:4px;flex:1;
-}
-.fixture-row__team--away {
-  flex-direction:row-reverse; /* badge on right for away team */
-}
-.fixture-row__badge {
-  width:20px;height:20px;object-fit:contain;flex-shrink:0;
-  border-radius:2px;
-}
-.fixture-row__team-name {
-  font-size:0.7rem;font-weight:var(--fw-semibold);
-  color:var(--color-text-primary);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  max-width:70px;
-}
-.fixture-row__score-center {
-  font-size:var(--fs-xs);font-weight:var(--fw-bold);
-  color:var(--color-accent);
-  background:var(--color-surface-alt);
-  border:1px solid var(--color-border);
-  border-radius:4px;padding:1px 6px;white-space:nowrap;flex-shrink:0;
-}
-.fixtures-empty,.fixtures-error { font-size:var(--fs-xs);color:var(--color-text-secondary);padding:var(--space-xs) 0;margin:0; }
-
 
 .scout-card__team-logo  { width:22px;height:22px;object-fit:contain;flex-shrink:0; }
 .scout-card__league-logo { width:18px;height:18px;object-fit:contain;opacity:0.7;margin-left:auto; }

@@ -1,17 +1,13 @@
 /**
  * ApiService.js
  * -----------------------------------------------------------------------
- * API-Football v3 (api-sports.io) — player search + fixtures
+ * API-Football v3 (api-sports.io) — player search
  *
  * PLAYER SEARCH STRATEGY — parallel multi-league, single season:
  * API-Football requires a league ID and a season alongside any player name search.
  * Instead of forcing the user to pick a league, we fire requests across all
  * SEARCH_LEAGUES simultaneously via Promise.all for one given season,
  * then merge, sort, and deduplicate the results by player ID.
- *
- * FIXTURES:
- * Uses the team ID returned with each player's statistics to fetch
- * last 5 and next 5 fixtures for that player's club.
  * -----------------------------------------------------------------------
  */
 import { API_KEY, API_BASE_URL, SEARCH_LEAGUES, DEFAULT_SEASON } from '../../config/config.js';
@@ -90,32 +86,6 @@ export class ApiService {
   }
 
   /**
-   * Fetch last 5 completed fixtures for a team.
-   * @param  {string|number} teamId — API-Football team ID
-   * @returns {Promise<Array>}
-   */
-  async getTeamLastFixtures(teamId) {
-    if (!teamId) return [];
-    const raw = await this._fetch(
-      `${this._base}/fixtures?team=${teamId}&last=5`
-    ).catch(() => []);
-    return raw.map(this._normaliseFixture);
-  }
-
-  /**
-   * Fetch next 5 upcoming fixtures for a team.
-   * @param  {string|number} teamId — API-Football team ID
-   * @returns {Promise<Array>}
-   */
-  async getTeamNextFixtures(teamId) {
-    if (!teamId) return [];
-    const raw = await this._fetch(
-      `${this._base}/fixtures?team=${teamId}&next=5`
-    ).catch(() => []);
-    return raw.map(this._normaliseFixture);
-  }
-
-  /**
    * Search players by team name (used by Dream Team builder).
    * @param  {string} teamName
    * @returns {Promise<Array>}
@@ -174,36 +144,6 @@ export class ApiService {
       assists:      goals.assists   ?? '—',
       yellowCards:  cards.yellow   ?? '—',
       redCards:     cards.red      ?? '—',
-    };
-  };
-
-  _normaliseFixture = (item) => {
-    const fixture = item?.fixture  || {};
-    const teams   = item?.teams    || {};
-    const goals   = item?.goals    || {};
-    const league  = item?.league   || {};
-
-    const dateObj = fixture.date ? new Date(fixture.date) : null;
-    const date    = dateObj
-      ? dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-      : '';
-    const time    = dateObj
-      ? dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-      : '';
-
-    return {
-      id:        fixture.id        || '',
-      homeTeam:  teams.home?.name  || '—',
-      awayTeam:  teams.away?.name  || '—',
-      homeBadge: teams.home?.logo  || '',
-      awayBadge: teams.away?.logo  || '',
-      homeScore: goals.home        ?? null,
-      awayScore: goals.away        ?? null,
-      date,
-      time,
-      league:    league.name       || '',
-      venue:     fixture.venue?.name || '',
-      status:    fixture.status?.short || '',
     };
   };
 
