@@ -117,6 +117,136 @@ export class ScoutRenderer {
       this._applyFilterAndRender();
       this._saveState();
     });
+
+    // "Show Fixtures" — opens a modal with the player's stats stacked
+    // alongside their recent/upcoming fixtures. Delegated since cards are
+    // re-rendered on every page/filter change.
+    this._grid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.scout-card__fixtures-btn');
+      if (!btn) return;
+      this._openFixturesModal(btn.dataset.playerId, btn.dataset.teamId || null);
+    });
+  }
+
+  // ─────────────────────────────────────────
+  // Fixtures modal
+  // ─────────────────────────────────────────
+
+  _ensureModal() {
+    if (this._modal) return this._modal;
+
+    const modal = document.createElement('div');
+    modal.className = 'fixtures-modal';
+    modal.hidden = true;
+    modal.innerHTML = `
+      <div class="fixtures-modal__backdrop" data-modal-close></div>
+      <div class="fixtures-modal__dialog" role="dialog" aria-modal="true" aria-label="Player fixtures">
+        <button type="button" class="fixtures-modal__close" data-modal-close aria-label="Close">✕</button>
+        <div class="fixtures-modal__body"></div>
+      </div>`;
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target.closest('[data-modal-close]')) this._closeFixturesModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.hidden) this._closeFixturesModal();
+    });
+
+    this._modal = modal;
+    return modal;
+  }
+
+  _closeFixturesModal() {
+    if (this._modal) this._modal.hidden = true;
+    document.body.classList.remove('fixtures-modal-open');
+  }
+
+  async _openFixturesModal(playerId, teamId) {
+    const modal = this._ensureModal();
+    const body  = modal.querySelector('.fixtures-modal__body');
+    const player = this._playerLookup?.get(String(playerId));
+
+    modal.hidden = false;
+    document.body.classList.add('fixtures-modal-open');
+    body.innerHTML = `
+      ${player ? this._buildModalHeader(player) : ''}
+      <p class="fixtures-modal__msg">Loading fixtures…</p>`;
+
+    try {
+      const { past } = await this._api.getPlayerFixtures(playerId, teamId);
+      body.innerHTML = `
+        ${player ? this._buildModalHeader(player) : ''}
+        ${player ? this._buildStatsSection(player) : ''}
+        ${this._buildFixturesSection(past)}`;
+    } catch {
+      body.innerHTML = `
+        ${player ? this._buildModalHeader(player) : ''}
+        <p class="fixtures-modal__msg">Couldn't load fixtures — try again.</p>`;
+    }
+  }
+
+  _buildModalHeader(player) {
+    return `
+      <div class="fixtures-modal__header">
+        <img src="${player.photo}" alt="Photo of ${player.name}" class="fixtures-modal__photo"
+          onerror="this.src='https://placehold.co/64x64/1A1A1A/F2B705?text=${encodeURIComponent(player.name.charAt(0))}'"/>
+        <div>
+          <h3 class="fixtures-modal__name">${player.name}</h3>
+          <p class="fixtures-modal__meta">${player.team} · ${player.position}</p>
+        </div>
+      </div>`;
+  }
+
+  _buildStatsSection(player) {
+    const statVal = (v) => (v === '—' || v === null || v === undefined || v === '') ? '—' : v;
+    return `
+      <div class="fixtures-modal__stats">
+        <div class="fixtures-modal__stat"><span>${statVal(player.appearances)}</span><label>Apps</label></div>
+        <div class="fixtures-modal__stat"><span>${statVal(player.goals)}</span><label>Goals</label></div>
+        <div class="fixtures-modal__stat"><span>${statVal(player.assists)}</span><label>Assists</label></div>
+        <div class="fixtures-modal__stat"><span>${statVal(player.yellowCards)}</span><label>🟨</label></div>
+        <div class="fixtures-modal__stat"><span>${statVal(player.rating)}</span><label>Rating</label></div>
+      </div>`;
+  }
+
+  _buildFixturesSection(past) {
+    const fmtDate = (iso) => {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return Number.isNaN(d.getTime())
+        ? '—'
+        : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    const teamLogo = (src, name) => src
+      ? `<img src="${src}" alt="${name}" class="fixture-row__team-logo" title="${name}"
+           onerror="this.style.visibility='hidden'"/>`
+      : '';
+
+    const fixtureRow = (fx) => `
+      <div class="fixture-row">
+        <span class="fixture-row__date">${fmtDate(fx.date)}</span>
+        <span class="fixture-row__match">
+          <span class="fixture-row__team">${fx.homeTeam}</span>
+          ${teamLogo(fx.homeTeamLogo, fx.homeTeam)}
+          <span class="fixture-row__score">${fx.homeScore ?? '–'}-${fx.awayScore ?? '–'}</span>
+          ${teamLogo(fx.awayTeamLogo, fx.awayTeam)}
+          <span class="fixture-row__team">${fx.awayTeam}</span>
+        </span>
+      </div>`;
+
+    const pastHtml = past.length
+      ? past.map(fx => fixtureRow(fx)).join('')
+      : `<p class="fixture-empty">No recent results available.</p>`;
+
+    return `
+      <div class="fixtures-modal__fixtures">
+        <div class="fixtures-modal__section">
+          <p class="fixtures-modal__label">Last 5 Results</p>
+          ${pastHtml}
+        </div>
+      </div>`;
   }
 
   _activePosition() {
@@ -167,6 +297,8 @@ export class ScoutRenderer {
     this._hideAllStates();
     const start     = (this._currentPage - 1) * ScoutRenderer.RESULTS_PER_PAGE;
     const pageItems = this._filtered.slice(start, start + ScoutRenderer.RESULTS_PER_PAGE);
+
+    this._playerLookup = new Map(pageItems.map(p => [String(p.id), p]));
 
     this._grid.innerHTML = pageItems.map(p => this._buildPlayerCard(p)).join('');
     this._buildPagination();
@@ -229,6 +361,11 @@ export class ScoutRenderer {
           ${player.height ? `<span>height: ${player.height} cm</span>` : ''}
           ${player.born   ? `<span>🗓️ ${player.born}</span>`   : ''}
         </div>
+
+        <button type="button" class="scout-card__fixtures-btn"
+          data-player-id="${player.id}" data-team-id="${player.rawTeamId || ''}">
+          Show Fixtures
+        </button>
 
       </article>`;
   }

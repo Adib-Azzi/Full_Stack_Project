@@ -44,13 +44,12 @@ const FORMATIONS = {
 
 // Maps every possible slot label (across all formations) to the broad
 // position category used by both the LEGENDS dataset and the API-Football
-// live search results ('Goalkeeper' | 'Defender' | 'Midfielder' | 'Attacker').
+// live search results ('Goalkeeper' | 'Defender' | 'Midfielder' | 'Forward').
 const SLOT_POSITION_MAP = {
-  GK:  'Goalkeeper',
-  LB:  'Defender',  CB: 'Defender', RB: 'Defender',
-  LM:  'Midfielder', CM: 'Midfielder', RM: 'Midfielder',
-  LCM: 'Midfielder', RCM: 'Midfielder',
-  LW:  'Attacker',  ST: 'Attacker', RW: 'Attacker',
+      GK: 'Goalkeeper', G: 'Goalkeeper',
+      CB: 'Defender', D: 'Defender', LB: 'Defender', LWB: 'Defender', RB: 'Defender', RWB: 'Defender', 
+      AM: 'Midfielder', CM: 'Midfielder', LM: 'Midfielder', M: 'Midfielder', RM: 'Midfielder', 
+      F: 'Forward', FW: 'Forward', LW: 'Forward', RW: 'Forward', SS: 'Forward', ST: 'Forward'
 };
 
 // sessionStorage key used to persist the in-progress squad across page
@@ -189,7 +188,7 @@ export class DreamTeamRenderer {
     const style  = `left:${slot.x}%;top:${slot.y}%`;
 
     if (player) {
-      const isLivePlayer = player.photo && (player.photo.includes('api-sports') || player.photo.includes('api-football'));
+      const isLivePlayer = player.photo && player.photo.includes('bzzoiro.com/img/');
       
       const playerImage = isLivePlayer ? player.photo : `images/DreamTeam/${player.id}.jpg`;
       return `
@@ -398,7 +397,7 @@ export class DreamTeamRenderer {
 
       // Only keep players whose position matches the slot we're filling.
       // API-Football's `games.position` field uses the same category
-      // strings as our LEGENDS dataset (Goalkeeper/Defender/Midfielder/Attacker),
+      // strings as our LEGENDS dataset (Goalkeeper/Defender/Midfielder/Forward),
       // so we can filter directly on that.
       const players = this._activeCategory
         ? allPlayers.filter(p => p.position === this._activeCategory)

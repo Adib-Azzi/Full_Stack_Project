@@ -1,34 +1,25 @@
 /**
  * config.js
  * -----------------------------------------------------------------------
- * API-Football v3 (api-sports.io) — primary API for player search + fixtures
+ * Bzzoiro Sports Data (BSD) — free football API for player search + stats
  *
  * HOW TO GET YOUR FREE KEY:
- * 1. Go to https://dashboard.api-football.com/register
+ * 1. Go to https://sports.bzzoiro.com/register/
  * 2. Create a free account (no credit card needed)
- * 3. Copy your API key from the dashboard home screen
+ * 3. Copy your API token from your account page
  * 4. Paste it below replacing 'YOUR_API_KEY_HERE'
  *
- * FREE TIER LIMITS: 100 requests / day · 10 requests / minute
- * Each search fires (leagues × seasons) parallel requests.
+ * FREE TIER: football REST endpoints have no published rate limit,
+ * no daily quota, and require no credit card.
  * -----------------------------------------------------------------------
  */
-export const API_KEY      = 'd453897e75911e8f2010c46dc234e90e';
-export const API_BASE_URL = 'https://v3.football.api-sports.io';
+export const API_KEY      = '5115d466dcac22865c110e8cfec4c7c5b09cab61';
+export const API_BASE_URL = 'https://sports.bzzoiro.com/api/v2';
+export const IMG_BASE_URL = 'https://sports.bzzoiro.com/img';
 
-/**
- * Leagues searched in parallel on every player name query.
- * Covers the top 5 European leagues — enough to find virtually
- * any prominent professional player without requiring user input.
- */
-export const SEARCH_LEAGUES = [
-  { id: 39,  name: 'Premier League'  },
-  { id: 140, name: 'La Liga'         },
-  { id: 78,  name: 'Bundesliga'      },
-  { id: 135, name: 'Serie A'         },
-  { id: 61,  name: 'Ligue 1'         },
-];
+// How many per-match stat rows to sample per player when building the
+// "season" totals (goals/assists/cards/appearances) shown on scout cards.
+export const STATS_SAMPLE_SIZE = 40;
 
-// Search both current and previous season to handle mid-season / transfer gaps seamlessly
-export const DEFAULT_SEASON = 2024;
-export const AVAILABLE_SEASONS = [2024, 2023, 2022];
+// How many players to pull back per name search.
+export const SEARCH_RESULTS_LIMIT = 24;

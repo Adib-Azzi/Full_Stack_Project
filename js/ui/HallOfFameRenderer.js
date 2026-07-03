@@ -91,7 +91,7 @@ export class HallOfFameRenderer {
       'Goalkeeper': 1,
       'Defender': 2,
       'Midfielder': 3,
-      'Attacker': 4
+      'Forward': 4
     };
 
     // 2. Sort the positions based on the map weights

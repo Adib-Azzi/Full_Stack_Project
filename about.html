@@ -83,17 +83,17 @@
         publicly available historical records.
       </p>
 
-      <h2>Live API — API-Football</h2>
+      <h2>Live API — Bzzoiro Sports Data</h2>
       <p>
-        The Live Scout page consumes the <strong>API-Football v3</strong> endpoint from
-        <a href="https://www.api-sports.io" target="_blank" rel="noopener">api-sports.io</a>.
-        The free tier provides 100 requests per day, which is sufficient for demonstration.
+        The Live Scout page consumes the free football REST API from
+        <a href="https://sports.bzzoiro.com" target="_blank" rel="noopener">sports.bzzoiro.com</a>.
+        The free tier has no published daily quota and requires no credit card.
       </p>
 
       <h3>How to set up your API key</h3>
       <ol class="about-steps">
-        <li>Go to <a href="https://dashboard.api-football.com/register" target="_blank" rel="noopener">dashboard.api-football.com/register</a> and create a free account.</li>
-        <li>After registering, go to your dashboard and copy your <strong>API Key</strong> from the "My Account" section.</li>
+        <li>Go to <a href="https://sports.bzzoiro.com/register/" target="_blank" rel="noopener">sports.bzzoiro.com/register</a> and create a free account.</li>
+        <li>After registering, copy your <strong>API token</strong> from your account page.</li>
         <li>Open <code>config/config.js</code> in your project.</li>
         <li>Replace <code>'YOUR_API_KEY_HERE'</code> with your actual key: <br/><code>export const API_KEY = 'abc123yourkey';</code></li>
         <li>Save the file, reload <a href="live-scout.html">Live Scout</a>, and search for any player name.</li>
