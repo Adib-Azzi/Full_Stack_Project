@@ -64,6 +64,7 @@ export class DreamTeamRenderer {
     this._modalBody     = null;
     this._activeSlot    = null;   // index of the slot being filled
     this._activeCategory = null; // required position category for the active slot
+    this._legendsQuery  = '';    // local search text for the Legends tab (no API call)
     this._formation     = '4-3-3';
     this._squad         = new Array(11).fill(null); // 11 player slots
 
@@ -143,7 +144,7 @@ export class DreamTeamRenderer {
           aria-label="Remove ${player.name} from ${slot.label}">
           <div class="pitch-slot__avatar">
             <img
-              src="${player.photo || player.image || ''}"
+              src="images/DreamTeam/${player.id}.jpg"
               alt="${player.name}"
               class="pitch-slot__img"
               onerror="this.src='https://placehold.co/60x60/0B6E4F/F7F7F2?text=${encodeURIComponent(player.name.charAt(0))}'"
@@ -192,6 +193,12 @@ export class DreamTeamRenderer {
           <button class="dt-tab" data-tab="live">🌐 Live Players</button>
         </div>
 
+        <!-- Search bar (visible on Legends tab) -->
+        <div class="dt-modal__search" id="dtLegendsSearch">
+          <input type="text" id="dtLegendsSearchInput" class="scout-search-form__input"
+            placeholder="Search legends by name…" autocomplete="off" />
+        </div>
+
         <!-- Search bar (visible on Live tab) -->
         <div class="dt-modal__search" id="dtLiveSearch" hidden>
           <input type="text" id="dtSearchInput" class="scout-search-form__input"
@@ -220,8 +227,17 @@ export class DreamTeamRenderer {
         overlay.querySelectorAll('.dt-tab').forEach(t => t.classList.remove('is-active'));
         tab.classList.add('is-active');
         const isLive = tab.dataset.tab === 'live';
-        overlay.querySelector('#dtLiveSearch').hidden = !isLive;
-        isLive ? this._renderLiveSearchPrompt() : this._renderLegendsGrid();
+        const liveSearchEl = overlay.querySelector('#dtLiveSearch');
+        const legendsSearchEl = overlay.querySelector('#dtLegendsSearch');
+        if (isLive) {
+            liveSearchEl.classList.remove('is-hidden');
+            legendsSearchEl.classList.add('is-hidden');
+            this._renderLiveSearchPrompt();
+        } else {
+            liveSearchEl.classList.add('is-hidden');
+            legendsSearchEl.classList.remove('is-hidden');
+            this._renderLegendsGrid();
+        }
       });
     });
 
@@ -238,6 +254,12 @@ export class DreamTeamRenderer {
         if (q.length >= 3) await this._runLiveSearch(q);
       }
     });
+
+    // Legends search — purely local, filters the static LEGENDS array, no API call
+    overlay.querySelector('#dtLegendsSearchInput').addEventListener('input', (e) => {
+      this._legendsQuery = e.target.value.trim();
+      this._renderLegendsGrid();
+    });
   }
 
   _openSearchModal(slotIndex, slotLabel) {
@@ -249,7 +271,10 @@ export class DreamTeamRenderer {
     // Reset to Legends tab
     this._modal.querySelectorAll('.dt-tab').forEach(t => t.classList.remove('is-active'));
     this._modal.querySelector('[data-tab="legends"]').classList.add('is-active');
-    this._modal.querySelector('#dtLiveSearch').hidden = true;
+    this._modal.querySelector('#dtLiveSearch').hidden    = true;
+    this._modal.querySelector('#dtLegendsSearch').hidden = false;
+    this._legendsQuery = '';
+    this._modal.querySelector('#dtLegendsSearchInput').value = '';
 
     this._renderLegendsGrid();
     this._modal.classList.add('is-open');
@@ -268,13 +293,18 @@ export class DreamTeamRenderer {
   // ─────────────────────────────────────────
 
   _renderLegendsGrid() {
-    const eligible = this._activeCategory
+    let eligible = this._activeCategory
       ? LEGENDS.filter(l => l.position === this._activeCategory)
       : LEGENDS;
 
+    const q = (this._legendsQuery || '').toLowerCase();
+    if (q.length >= 1) {
+      eligible = eligible.filter(l => l.name.toLowerCase().includes(q));
+    }
+
     if (!eligible.length) {
       this._modalBody.innerHTML = `
-        <p class="dt-search-prompt">No legends available for this position.</p>`;
+        <p class="dt-search-prompt">No legends found${q ? ` for "${this._legendsQuery}"` : ' for this position'}.</p>`;
       return;
     }
 
@@ -307,7 +337,8 @@ export class DreamTeamRenderer {
     this._modalBody.innerHTML = `
       <div class="spinner" role="status"><div class="spinner__ball"></div></div>`;
     try {
-      const allPlayers = await this._api.searchPlayers(query);
+      // Dream Team always searches the 2025 season — no season picker here.
+      const allPlayers = await this._api.searchPlayers(query, 2025);
 
       // Only keep players whose position matches the slot we're filling.
       // API-Football's `games.position` field uses the same category

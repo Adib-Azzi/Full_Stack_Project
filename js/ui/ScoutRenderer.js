@@ -17,9 +17,10 @@ export class ScoutRenderer {
 
   constructor(apiService, elementIds) {
     this._api        = apiService;
-    this._form       = document.getElementById(elementIds.form);
-    this._input      = document.getElementById(elementIds.input);
-    this._posFilter  = document.getElementById(elementIds.posFilter);
+    this._form         = document.getElementById(elementIds.form);
+    this._input        = document.getElementById(elementIds.input);
+    this._seasonSelect = document.getElementById(elementIds.seasonSelect);
+    this._posFilter    = document.getElementById(elementIds.posFilter);
     this._grid       = document.getElementById(elementIds.grid);
     this._loading    = document.getElementById(elementIds.loading);
     this._error      = document.getElementById(elementIds.error);
@@ -53,7 +54,7 @@ export class ScoutRenderer {
       this._lastQuery   = query;
       this._currentPage = 1;
       this._expandedCardId = null;
-      await this._performSearch(query);
+      await this._performSearch(query, this._activeSeason());
     });
 
     // Client-side position filter — pill buttons rendered in HTML
@@ -72,14 +73,18 @@ export class ScoutRenderer {
     return active?.dataset.pos || '';
   }
 
+  _activeSeason() {
+    return this._seasonSelect?.value || '2025';
+  }
+
   // ─────────────────────────────────────────
   // Search + Filter pipeline
   // ─────────────────────────────────────────
 
-  async _performSearch(query) {
+  async _performSearch(query, season) {
     this._showLoading();
     try {
-      this._allResults = await this._api.searchPlayers(query);
+      this._allResults = await this._api.searchPlayers(query, season);
       this._applyFilterAndRender();
     } catch (err) {
       this._showError(err.message);
@@ -363,7 +368,7 @@ export class ScoutRenderer {
          <button class="btn-primary" id="retryBtn" style="margin-top:1rem">Try Again</button>`;
 
     this._error.querySelector('#retryBtn')?.addEventListener('click', () => {
-      if (this._lastQuery) this._performSearch(this._lastQuery);
+      if (this._lastQuery) this._performSearch(this._lastQuery, this._activeSeason());
     });
   }
 

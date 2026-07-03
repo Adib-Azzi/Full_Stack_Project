@@ -3,10 +3,10 @@
  * -----------------------------------------------------------------------
  * API-Football v3 (api-sports.io) — player search + fixtures
  *
- * PLAYER SEARCH STRATEGY — parallel multi-league & multi-season:
+ * PLAYER SEARCH STRATEGY — parallel multi-league, single season:
  * API-Football requires a league ID and a season alongside any player name search.
  * Instead of forcing the user to pick a league, we fire requests across all
- * combinations of SEARCH_LEAGUES and SEARCH_SEASONS simultaneously via Promise.all,
+ * SEARCH_LEAGUES simultaneously via Promise.all for one given season,
  * then merge, sort, and deduplicate the results by player ID.
  *
  * FIXTURES:
@@ -27,13 +27,14 @@ export class ApiService {
   // ─────────────────────────────────────────
 
   /**
-   * Search players by name across all configured leagues and seasons in parallel.
+   * Search players by name across all configured leagues, for one season, in parallel.
    * Returns a deduplicated, normalised array sorted by rating (best first).
    *
    * @param  {string} name — player name, min 3 chars
+   * @param  {number|string} [season] — season to search, defaults to DEFAULT_SEASON
    * @returns {Promise<Array>}
    */
-  async searchPlayers(name) {
+  async searchPlayers(name, season = DEFAULT_SEASON) {
     const query = (name || '').trim();
     if (query.length < 3) {
       throw new Error('Please enter at least 3 characters to search.');
@@ -42,13 +43,11 @@ export class ApiService {
       throw new Error('NO_KEY');
     }
 
-    // Build combinations of urls for leagues and seasons
-    const requests = SEARCH_LEAGUES.flatMap(league =>
-      SEARCH_SEASONS.map(season => ({
-        url: `${this._base}/players?search=${encodeURIComponent(query)}&league=${league.id}&season=${season}`,
-        label: `${league.name} ${season}`
-      }))
-    );
+    // Build one url per league, all for the same season
+    const requests = SEARCH_LEAGUES.map(league => ({
+      url: `${this._base}/players?search=${encodeURIComponent(query)}&league=${league.id}&season=${season}`,
+      label: `${league.name} ${season}`
+    }));
 
     // Fire all requests in parallel — capture data and track error logs per lookup block
     const settled = await Promise.all(
@@ -134,9 +133,9 @@ export class ApiService {
     const teamId = teams[0]?.team?.id;
     if (!teamId) return [];
 
-    // Fetch roster data using current primary season block
+    // Fetch roster data using the default season
     const raw = await this._fetch(
-      `${this._base}/players?team=${teamId}&season=${SEARCH_SEASONS[0]}`
+      `${this._base}/players?team=${teamId}&season=${DEFAULT_SEASON}`
     ).catch(() => []);
 
     return raw.map(this._normalisePlayer);

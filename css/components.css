@@ -811,3 +811,7 @@ img[loading="lazy"].is-loaded { opacity:1; }
         max-width: 100%;
     }
 }
+
+.dt-modal__search.is-hidden {
+    display: none !important;
+}

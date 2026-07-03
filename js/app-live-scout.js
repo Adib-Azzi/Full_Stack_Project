@@ -5,12 +5,13 @@ import { ScoutRenderer }  from './ui/ScoutRenderer.js';
 new NavController();
 
 new ScoutRenderer(new ApiService(), {
-  form:       'scoutSearchForm',
-  input:      'scoutSearchInput',
-  posFilter:  'scoutPositionFilter',
-  grid:       'scoutResultsGrid',
-  loading:    'scoutLoadingState',
-  error:      'scoutErrorState',
-  empty:      'scoutEmptyState',
-  pagination: 'scoutPagination',
+  form:         'scoutSearchForm',
+  input:        'scoutSearchInput',
+  seasonSelect: 'scoutSeasonSelect',
+  posFilter:    'scoutPositionFilter',
+  grid:         'scoutResultsGrid',
+  loading:      'scoutLoadingState',
+  error:        'scoutErrorState',
+  empty:        'scoutEmptyState',
+  pagination:   'scoutPagination',
 });

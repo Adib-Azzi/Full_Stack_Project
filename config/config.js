@@ -13,7 +13,7 @@
  * Each search fires (leagues × seasons) parallel requests.
  * -----------------------------------------------------------------------
  */
-export const API_KEY      = 'd453897e75911e8f2010c46dc234e90e';
+export const API_KEY      = '6bd6a0842ba330c197c3b4d968483870';
 export const API_BASE_URL = 'https://v3.football.api-sports.io';
 
 /**
@@ -30,5 +30,5 @@ export const SEARCH_LEAGUES = [
 ];
 
 // Search both current and previous season to handle mid-season / transfer gaps seamlessly
-export const DEFAULT_SEASON = 2025;
-export const AVAILABLE_SEASONS = [2025, 2024, 2023, 2022];
+export const DEFAULT_SEASON = 2024;
+export const AVAILABLE_SEASONS = [2024, 2023, 2022];
