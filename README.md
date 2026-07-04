@@ -112,7 +112,7 @@ The Live Scout page requires a free Bzzoiro Sports Data (BSD) key:
 - No published rate limit or daily quota, no credit card required
 - Name-only player search across supported leagues
 
-> ⚠️ **Security note:** `config/config.js` is not committed with a real key in this repository — if you clone this project, generate your own key and paste it locally. Never commit a live API key to a public repo.
+> ⚠️ **Security note:** This is a static, backend-less site (HTML/CSS/JS only, no server), so there is no way to hide an API key from the deployed site — it is visible to anyone who opens dev tools or views the live source. `config/config.js` intentionally ships with a real key so the live deployment works out of the box for grading. The key used is scoped to the BSD API's free tier (no billing enabled), and was rotated after an earlier, unrelated exposure in git history before this key was issued. If this key is ever abused, it can be regenerated from the BSD dashboard at any time.
 
 ---
 
@@ -195,8 +195,11 @@ The Live Scout page requires a free Bzzoiro Sports Data (BSD) key:
 | 26 | `removed season filtering from live scout` |
 | 27 | `added league filtering` |
 | 28 | `final fixture UI fix` |
+| 29 | `fixing home page responsiveness` |
+| 30 | `fixing home page responsiveness v2` |
+| 31 | `chore: add live API key for deployment` |
 
-The project was switched from an API-Football-based integration (commits 1–6) to the Bzzoiro Sports Data API (commit 7 onward) after hitting free-tier limitations, with iterative fixes and the Dream Team feature added across the later commits.
+The project was switched from an API-Football-based integration (commits 1–6) to the Bzzoiro Sports Data API (commit 7 onward) after hitting free-tier limitations, with iterative fixes and the Dream Team feature added across the later commits. Commits 29–31 cover final home-page responsiveness fixes and re-adding the live API key ahead of deployment (see the Security Note above).
 
 ---
 
@@ -204,11 +207,12 @@ The project was switched from an API-Football-based integration (commits 1–6) 
 
 *As required by the academic brief, this section documents AI tool usage throughout the project.*
 
-### Tool Used
-Claude (Anthropic) — used as an interactive senior front-end engineering mentor throughout all phases of the project.
+### Tools Used
+- **Claude (Anthropic)** — used as an interactive senior front-end engineering mentor throughout all phases of the project: architecture, code implementation, debugging, and UX polish.
+- **Gemini (Google)** — used to help draft and refine some of the prompts given to Claude (e.g., structuring the initial project-kickoff prompt so it clearly specified the tech constraints, grading rubric, and phased workflow before sending it to Claude).
 
 ### How It Was Used
-The project was built interactively and phase-by-phase. Claude proposed concepts, I selected the topic, and we built each file together with explanations at each step. I reviewed and approved every phase before Claude proceeded to the next.
+The project was built interactively and phase-by-phase. Claude proposed concepts, I selected the topic, and we built each file together with explanations at each step. I reviewed and approved every phase before Claude proceeded to the next. For some requests, I used Gemini first to help me phrase a clearer, more specific prompt, then sent that refined prompt to Claude to actually generate the code.
 
 ### What Claude Contributed
 - Project architecture proposal and directory structure design
@@ -224,19 +228,23 @@ The project was built interactively and phase-by-phase. Claude proposed concepts
 - Approval and testing of each implementation phase
 - Bug report: API-Football `/players` endpoint error ("League or Team field is required") — identified during live testing, communicated to Claude for diagnosis and fix
 - Decision to drop API-Football in favor of Bzzoiro Sports Data, plus design and testing of the Dream Team builder feature
+- Used Gemini to refine some prompts before giving them to Claude
 
 ### Bugs Encountered & Fixed
 | Bug | Root Cause | Fix Applied |
 |-----|-----------|-------------|
 | `API error: The League or Team field is required` | API-Football free tier `/players` endpoint requires `league` or `team` ID parameter alongside `search`; bare name search not supported | Added league selector dropdown to `live-scout.html`; updated `ApiService.searchPlayers()` to accept and pass `leagueId`; updated `ScoutRenderer` to read and validate the league field before submitting |
-| Player position values from the new API used "Forward" instead of the "Attacker" label used across Hall of Fame filters | Inconsistent position naming between the two data sources | Normalized incoming API position values to "Attacker" in `ApiService`/`ScoutRenderer` so filters stay consistent across Hall of Fame and Live Scout |
+| Player position values from the new API used position abreviation "F", "LW", "ST"... instead of the "Forward" label used across Hall of Fame filters | Inconsistent position naming between the two data sources | Normalized incoming API position values to "Forward" in `ApiService`/`ScoutRenderer` so filters stay consistent across Hall of Fame and Live Scout |
+| Dream Team builder and Live Scout search state were both lost whenever the browser tab was switched away and back | State was held only in local variables inside the renderer classes, not persisted anywhere | Added in-memory/session-level state persistence so an in-progress Dream Team lineup and an active Live Scout search survive a tab switch |
 
 ### Prompts Used
-Detailed prompts are documented in the Claude conversation transcript. Key prompt themes:
-- "Propose 3 creative Football/World Cup themed website concepts..."
-- "Continue" (to proceed between phases after reviewing and testing)
-- Specific bug report: pasting the exact API error message for diagnosis
-- "The API-Football free tier is too limited for name-only search, help me migrate to an API that supports it"
+Three representative prompts sent to Claude during the project (lightly condensed where noted):
+
+1. **Project kickoff prompt** (refined with Gemini first) — set up Claude as an interactive mentor and defined the full rubric-driven workflow: *"You are an expert senior front-end engineer... guide me step-by-step through building a high-scoring individual Football / World Cup related web application from scratch based on a strict academic rubric... Do not dump all the code at once... [specifies HTML/CSS/Bootstrap/Flexbox rules, ES6-class-only JavaScript, the sticky-nav custom requirement, the 15+ curated items rule, UI/UX design directives, Git commit discipline, and a 6-phase build workflow ending in Phase 1: propose 3 creative topic concepts]."*
+2. **Dream Team position-filter fix** — *"in the dream 11, when i need to insert a player in an attacking position, i shouldn't be able to choose a goalkeeper or defender or even midfielder. can this be fixed by adding filters?"*
+3. **State-persistence fix** — *"currently when i am building a dream team if i switch to a different tab my progress will be gone. also in the live scout when after i search for a player if i switch tabs, the search will be deleted. i want something to save my progress"*
+
+
 
 ---
 
