@@ -7,8 +7,8 @@ import { animateCards, initLazyImages } from './ui/animations.js';
 
 new NavController();
 
-// ---- Featured Legends (Pelé, Maradona, Messi) ----
-const FEATURED_IDS   = ['pele', 'maradona', 'messi'];
+// ---- Featured Legends (Pelé, Maradona) ----
+const FEATURED_IDS   = ['pele', 'maradona'];
 const featuredLegends = LEGENDS.filter((l) => FEATURED_IDS.includes(l.id));
 const featuredGrid    = document.getElementById('featuredGrid');
 
@@ -41,7 +41,6 @@ if (featuredGrid) {
               <span class="legend-card__stat-value legend-card__stat-value--stars" aria-label="${legend.worldCups} World Cup wins">${wcStars}</span>
             </div>
           </div>
-          <p class="legend-card__bio">${legend.bio.substring(0, 160)}…</p>
           <a href="hall-of-fame.html" class="btn-primary" style="margin-top:auto;text-align:center;display:block;">Full Profiles →</a>
         </div>
       </article>`;

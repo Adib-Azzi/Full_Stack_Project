@@ -13,7 +13,7 @@
  * no daily quota, and require no credit card.
  * -----------------------------------------------------------------------
  */
-export const API_KEY      = '5115d466dcac22865c110e8cfec4c7c5b09cab61';
+export const API_KEY      = 'YOUR_API_KEY_HERE';
 export const API_BASE_URL = 'https://sports.bzzoiro.com/api/v2';
 export const IMG_BASE_URL = 'https://sports.bzzoiro.com/img';
 
