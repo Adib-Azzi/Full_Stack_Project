@@ -238,7 +238,7 @@ export class ScoutRenderer {
     };
 
     const teamLogo = (src, name) => src
-      ? `<img src="${src}" alt="${name}" class="fixture-row__team-logo"
+      ? `<img src="${src}" alt="${name}" class="fixture-row__team-logo" title="${name}"
            onerror="this.style.visibility='hidden'"/>`
       : '';
 
@@ -246,11 +246,11 @@ export class ScoutRenderer {
       <div class="fixture-row">
         <span class="fixture-row__date">${fmtDate(fx.date)}</span>
         <span class="fixture-row__match">
-          <span class="fixture-row__team">${fx.homeTeam}</span>
+          <span class="fixture-row__team-home">${fx.homeTeam}</span>
           ${teamLogo(fx.homeTeamLogo, fx.homeTeam)}
           <span class="fixture-row__score">${fx.homeScore ?? '–'}-${fx.awayScore ?? '–'}</span>
           ${teamLogo(fx.awayTeamLogo, fx.awayTeam)}
-          <span class="fixture-row__team">${fx.awayTeam}</span>
+          <span class="fixture-row__team-away">${fx.awayTeam}</span>
         </span>
       </div>`;
 
@@ -322,7 +322,6 @@ export class ScoutRenderer {
     this._buildPagination();
     animateCards('.scout-card');
     initLazyImages();
-    this._grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   _buildPlayerCard(player) {
