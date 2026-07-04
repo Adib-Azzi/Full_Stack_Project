@@ -2,9 +2,8 @@
 
 A football hall of fame and live player scouting web application, built as an academic front-end development project.
 
-**Author:** *(add your name here)*
-**Live site:** *(add your GitHub Pages / Netlify / Vercel URL here after deployment)*
-**Repository:** *(add your GitHub repo URL here)*
+**Author:** *Adib Al Azzi*
+**Repository:** *https://github.com/Adib-Azzi/Adib_Al_Azzi_Full_Stack_Project*
 
 ---
 
