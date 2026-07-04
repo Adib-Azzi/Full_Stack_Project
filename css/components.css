@@ -409,8 +409,9 @@ body.modal-open { overflow:hidden; }
   background:var(--color-surface-alt);
   color:var(--color-text-primary);
   transition:var(--transition-fast);
-  max-width: 100px;
+  max-width: 200px;
 }
+
 
 /* Position filter pills */
 .scout-pos-filters { display:flex;flex-wrap:wrap;gap:6px;padding:0 0 var(--space-md); }

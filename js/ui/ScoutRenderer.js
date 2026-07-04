@@ -16,12 +16,13 @@ import { animateCards, initLazyImages } from './animations.js';
 const STORAGE_KEY = 'liveScout:lastSearch';
 
 export class ScoutRenderer {
-  static RESULTS_PER_PAGE = 9;
+  static RESULTS_PER_PAGE = 8;
 
   constructor(apiService, elementIds) {
     this._api        = apiService;
     this._form         = document.getElementById(elementIds.form);
     this._input        = document.getElementById(elementIds.input);
+    this._leagueSelect = document.getElementById(elementIds.leagueSelect);
     this._posFilter    = document.getElementById(elementIds.posFilter);
     this._grid       = document.getElementById(elementIds.grid);
     this._loading    = document.getElementById(elementIds.loading);
@@ -36,10 +37,28 @@ export class ScoutRenderer {
 
     if (!this._form || !this._grid) { console.error('ScoutRenderer: elements missing.'); return; }
 
+    this._populateLeagues();
     this._bindEvents();
 
     if (!this._restoreState()) {
       this._showWelcome();
+    }
+  }
+
+  // ─────────────────────────────────────────
+  // Filter dropdown
+  // ─────────────────────────────────────────
+
+  /** Populates the league dropdown from BSD's /leagues/ endpoint. */
+  async _populateLeagues() {
+    if (!this._leagueSelect) return;
+    try {
+      const leagues = await this._api.getLeagues();
+      const options = ['<option value="">Last 40 Games</option>']
+        .concat(leagues.map(l => `<option value="${l.id}">${l.name}</option>`));
+      this._leagueSelect.innerHTML = options.join('');
+    } catch {
+      // Leave the "Last 40 Games" default in place if the league list fails to load.
     }
   }
 
@@ -51,6 +70,7 @@ export class ScoutRenderer {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
         query:       this._lastQuery,
+        league:      this._activeLeague(),
         position:    this._activePosition(),
         page:        this._currentPage,
         allResults:  this._allResults,
@@ -76,6 +96,7 @@ export class ScoutRenderer {
     this._currentPage = saved.page || 1;
 
     if (this._input) this._input.value = this._lastQuery;
+    if (this._leagueSelect && saved.league) this._leagueSelect.value = saved.league;
 
     if (this._posFilter && saved.position) {
       this._posFilter.querySelectorAll('.scout-pos-btn').forEach(b => {
@@ -101,7 +122,7 @@ export class ScoutRenderer {
       }
       this._lastQuery   = query;
       this._currentPage = 1;
-      await this._performSearch(query);
+      await this._performSearch(query, this._activeLeague());
     });
 
     // Client-side position filter — pill buttons rendered in HTML
@@ -251,14 +272,18 @@ export class ScoutRenderer {
     return active?.dataset.pos || '';
   }
 
+  _activeLeague() {
+    return this._leagueSelect?.value || '';
+  }
+
   // ─────────────────────────────────────────
   // Search + Filter pipeline
   // ─────────────────────────────────────────
 
-  async _performSearch(query) {
+  async _performSearch(query, leagueId) {
     this._showLoading();
     try {
-      this._allResults = await this._api.searchPlayers(query);
+      this._allResults = await this._api.searchPlayers(query, leagueId);
       this._applyFilterAndRender();
       this._saveState();
     } catch (err) {
@@ -446,7 +471,7 @@ export class ScoutRenderer {
          <button class="btn-primary" id="retryBtn" style="margin-top:1rem">Try Again</button>`;
 
     this._error.querySelector('#retryBtn')?.addEventListener('click', () => {
-      if (this._lastQuery) this._performSearch(this._lastQuery);
+      if (this._lastQuery) this._performSearch(this._lastQuery, this._activeLeague());
     });
   }
 

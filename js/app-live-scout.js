@@ -7,6 +7,7 @@ new NavController();
 new ScoutRenderer(new ApiService(), {
   form:         'scoutSearchForm',
   input:        'scoutSearchInput',
+  leagueSelect: 'scoutLeagueSelect',
   posFilter:    'scoutPositionFilter',
   grid:         'scoutResultsGrid',
   loading:      'scoutLoadingState',

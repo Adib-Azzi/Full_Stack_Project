@@ -58,7 +58,6 @@
     </section>
 
     <section class="container" aria-label="Search controls">
-      <!-- Name-only search — no league dropdown required anymore -->
       <form id="scoutSearchForm" class="scout-search-form" role="search" novalidate>
         <label for="scoutSearchInput" class="visually-hidden">Search player name</label>
         <input
@@ -67,6 +66,10 @@
           placeholder="Search any player — e.g. Bellingham, Haaland, Salah…"
           autocomplete="off" minlength="3"
         />
+        <label for="scoutLeagueSelect" class="visually-hidden">Filter by league</label>
+        <select id="scoutLeagueSelect" class="season-select" aria-label="Choose league">
+          <option value="">Last 40 Games</option>
+        </select>
         <button type="submit" class="btn-primary">Search</button>
       </form>
 

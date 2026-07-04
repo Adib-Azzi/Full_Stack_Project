@@ -35,15 +35,19 @@ export class ApiService {
   // ─────────────────────────────────────────
 
   /**
-   * Search players by name.
-   * (The `season` argument is accepted for backwards compatibility with
-   * the season selector in the UI, but BSD's player search isn't
-   * season-scoped, so it's currently unused.)
+   * Search players by name, optionally scoped to a league.
+   *
+   * League filtering is applied to the per-match stat sampling (via
+   * `_getPlayerStatLine`), not to the name search itself — BSD's
+   * /players/ search endpoint isn't league-scoped.
    *
    * @param  {string} name — player name, min 3 chars
+   * @param  {string|number} [leagueId] — BSD league_id (UNCONFIRMED — if
+   *         the API ignores or rejects it, stats simply fall back to
+   *         the unfiltered "last 40 games" sample.)
    * @returns {Promise<Array>}
    */
-  async searchPlayers(name /*, season */) {
+  async searchPlayers(name, leagueId) {
     const query = (name || '').trim();
     if (query.length < 3) {
       throw new Error('Please enter at least 3 characters to search.');
@@ -58,7 +62,7 @@ export class ApiService {
 
     if (!raw.length) return [];
 
-    const enriched = await Promise.all(raw.map(p => this._buildPlayer(p)));
+    const enriched = await Promise.all(raw.map(p => this._buildPlayer(p, leagueId)));
 
     // Sort: highest rated first (players with no sampled matches sink to the bottom)
     enriched.sort((a, b) => {
@@ -68,6 +72,15 @@ export class ApiService {
     });
 
     return enriched;
+  }
+
+  /**
+   * List available leagues, for populating a league filter dropdown.
+   * @returns {Promise<Array<{id:number, name:string}>>}
+   */
+  async getLeagues() {
+    const leagues = await this._fetch(`${this._base}/leagues/?limit=200`).catch(() => []);
+    return leagues.map(l => ({ id: l.id, name: l.name || `League ${l.id}` }));
   }
 
   /**
@@ -101,10 +114,10 @@ export class ApiService {
   // PRIVATE — building a full player record
   // ─────────────────────────────────────────
 
-  async _buildPlayer(p) {
+  async _buildPlayer(p, leagueId) {
     const [team, stats] = await Promise.all([
       p.current_team_id ? this._getTeam(p.current_team_id) : Promise.resolve(null),
-      this._getPlayerStatLine(p.id),
+      this._getPlayerStatLine(p.id, leagueId),
     ]);
 
     return {
@@ -172,8 +185,6 @@ export class ApiService {
     return map[code] || code || '—';
   }
 
-
-
   _ageFromDob(dob) {
     if (!dob) return null;
     const birth = new Date(dob);
@@ -194,14 +205,22 @@ export class ApiService {
   }
 
   /**
-   * Pulls a recent sample of per-match stat rows for a player and rolls
-   * them up into the season-style line the UI cards expect.
+   * Pulls a sample of per-match stat rows for a player and rolls them up
+   * into the stat line the UI cards expect.
+   *
+   * Defaults to the last `STATS_SAMPLE_SIZE` matches ("Last 40 Games").
+   * `leagueId`, if given, is passed as `league_id` — this is NOT
+   * confirmed to be supported on this endpoint. If the API ignores it,
+   * results just aren't league-filtered; if it 400s, the outer .catch
+   * returns an empty stat line rather than breaking the whole search.
    */
-  async _getPlayerStatLine(playerId) {
+  async _getPlayerStatLine(playerId, leagueId) {
     const empty = { appearances: '—', goals: '—', assists: '—', yellowCards: '—', redCards: '—', rating: null };
-    const rows = await this._fetch(
-      `${this._base}/players/${playerId}/stats/?limit=${STATS_SAMPLE_SIZE}`
-    ).catch(() => []);
+
+    let url = `${this._base}/players/${playerId}/stats/?limit=${STATS_SAMPLE_SIZE}`;
+    if (leagueId) url += `&league_id=${encodeURIComponent(leagueId)}`;
+
+    const rows = await this._fetch(url).catch(() => []);
 
     if (!rows.length) return empty;
 
@@ -272,8 +291,17 @@ export class ApiService {
   async _requestRaw(url) {
     let res;
     try {
-      res = await fetch(url, { headers: this._headers });
-    } catch {
+      const controller = new AbortController();
+      const timeoutId  = setTimeout(() => controller.abort(), 15000);
+      try {
+        res = await fetch(url, { headers: this._headers, signal: controller.signal });
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        throw new Error('The request took too long to respond — please try again.');
+      }
       throw new Error('Network error — please check your internet connection.');
     }
 
