@@ -180,12 +180,34 @@ header {
   gap:var(--space-md);
   padding:var(--space-lg) 0;
 }
-.legends-grid--home {
-  grid-template-columns:repeat(3, minmax(220px, 1fr));
-  justify-content:center;
-  margin-left: 5px; margin-right: 5px;
+
+/* 1. MOBILE & TABLET (Up to 991px wide) */
+@media (max-width: 991.98px) {
+  #featuredGrid.legends-grid--home {
+    display: grid !important;
+    /* Enforces exactly 2 columns maximum */
+    grid-template-columns: repeat(2, 1fr) !important;
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    gap: var(--space-md) !important;
+  }
+  /* Only show 2 of the 3 featured cards on mobile & tablet */
+  #featuredGrid.legends-grid--home .legend-card:nth-child(3) {
+    display: none !important;
+  }
 }
 
+/* 2. PC / DESKTOP (992px wide and larger) */
+@media (min-width: 992px) {
+  #featuredGrid.legends-grid--home {
+    display: grid !important;
+    /* Shifts to a 3-column layout on big screens */
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-width: 1140px !important;
+    margin: 0 10px !important;
+    gap: var(--space-md) !important;
+  }
+}
 /* Scroll-in animation */
 .legend-card, .scout-card { opacity:0;transform:translateY(16px);transition:opacity 0.4s ease,transform 0.4s ease,box-shadow 0.3s ease; }
 .legend-card.is-visible, .scout-card.is-visible { opacity:1;transform:translateY(0); }
@@ -557,7 +579,7 @@ body.fixtures-modal-open { overflow:hidden; }
    HOME PAGE
    ========================================================================== */
 .home-section { padding:var(--space-2xl) 0 var(--space-lg); }
-.home-section__header { display:flex;align-items:baseline;justify-content:space-between;margin-bottom:var(--space-md);gap:var(--space-sm); }
+.home-section__header { display:flex;align-items:baseline;justify-content:space-between;margin-bottom:var(--space-md);gap:var(--space-sm); margin-left:10px; margin-right:10px;}
 .home-section__title  { font-size:var(--fs-2xl);color:var(--color-text-primary);margin:0; }
 .home-section__link   { font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--color-accent);transition:var(--transition-fast);white-space:nowrap; }
 .home-section__link:hover { color:var(--color-accent-dark); }

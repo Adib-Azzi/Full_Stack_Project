@@ -8,7 +8,7 @@ import { animateCards, initLazyImages } from './ui/animations.js';
 new NavController();
 
 // ---- Featured Legends (Pelé, Maradona) ----
-const FEATURED_IDS   = ['pele', 'maradona'];
+const FEATURED_IDS   = ['pele', 'maradona', 'buffon'];
 const featuredLegends = LEGENDS.filter((l) => FEATURED_IDS.includes(l.id));
 const featuredGrid    = document.getElementById('featuredGrid');
 
